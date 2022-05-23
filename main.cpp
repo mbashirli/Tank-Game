@@ -109,5 +109,6 @@ void Menu2()
 int main() {
 
     MainMenu();
+    return 0;
 
 }
