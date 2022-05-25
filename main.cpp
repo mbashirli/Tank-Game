@@ -28,9 +28,11 @@ void MainMenu()
                 leaveApp = true;
                 break;
             case 1:
+                leaveApp = true;
                 Menu1();
                 break;
             case 2:
+                leaveApp = true;
                 Menu2();
                 break;
             default:
@@ -47,7 +49,7 @@ void Menu1()
     while (leaveMenu1!= true)
     {
         std::cout<<std::endl;
-        std::cout<<"Seçim - 1"<<std::endl;
+        std::cout<<"Menyu 1 Seçim - 1"<<std::endl;
         std::cout<<"Seçim - 2"<<std::endl;
         std::cout<<"Əvvəlki menyu - 0"<<std::endl;
         std::cout<<"Proqramı sonlandır - 9"<<std::endl;
@@ -59,11 +61,15 @@ void Menu1()
         switch (input)
         {
             case 0:
+                leaveMenu1 = true;
                 MainMenu();
                 break;
             case 1:
                 break;
             case 2:
+                break;
+            case 9:
+                leaveMenu1 = true;
                 break;
             default:
                 break;
@@ -79,7 +85,7 @@ void Menu2()
     while (leaveMenu2!=true)
     {
         std::cout<<std::endl;
-        std::cout<<"Seçim - 1"<<std::endl;
+        std::cout<<"Menyu 2 Seçim - 1"<<std::endl;
         std::cout<<"Seçim - 2"<<std::endl;
         std::cout<<"Əvvəlki menyu - 0"<<std::endl;
         std::cout<<"Proqramı sonlandır - 9"<<std::endl;
