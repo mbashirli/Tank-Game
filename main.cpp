@@ -7,6 +7,8 @@ void MainMenu();
 void Menu1();
 void Menu2();
 
+int main(); // pre-declaration
+
 struct terminalBufferSize {
     short x;
     short y;
@@ -29,6 +31,7 @@ void get_screen_buffer_info(terminalBufferSize* ts)
 }
 
 static int temp1, temp2;
+bool leaveMainMenu = true, leaveMenu1 = true, leaveMenu2 = true;
 terminalBufferSize* ts = new terminalBufferSize;
 
 void set_centered_text()
@@ -36,7 +39,6 @@ void set_centered_text()
     while (true)
     {
         get_screen_buffer_info(ts);
-        std::cout << "prt" << std::endl;
         if (ts->x != temp1 || ts->y != temp2)
         {
 
@@ -68,8 +70,7 @@ void MainMenu()
         switch(input)
         {
             case 0:
-                leaveApp = true;
-                break;
+                exit(0);
             case 1:
                 leaveApp = true;
                 Menu1();
@@ -112,8 +113,7 @@ void Menu1()
             case 2:
                 break;
             case 9:
-                leaveMenu1 = true;
-                break;
+                exit(0);
             default:
                 break;
         }
@@ -147,8 +147,7 @@ void Menu2()
             case 2:
                 break;
             case 9:
-                leaveMenu2 = true;
-                break;
+                exit(0);
             default:
                 break;
         }
@@ -162,7 +161,12 @@ int main() {
     go_to_xy(temp1 / 2, temp2 / 2);
     std::thread recenter_loop(set_centered_text);
 
-    MainMenu();
+    if (!leaveMenu1)
+        Menu1();
+    if (!leaveMenu2)
+        Menu2();
+    else
+        MainMenu();
 
 
     recenter_loop.join();
