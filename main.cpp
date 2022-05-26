@@ -1,8 +1,51 @@
 #include <iostream>
+#include <windows.h>
+#include <thread>
+
 
 void MainMenu();
 void Menu1();
 void Menu2();
+
+struct terminalBufferSize {
+    short x;
+    short y;
+};
+
+// set cursor position
+void go_to_xy(short x, short y)
+{
+    COORD p = { x, y };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
+}
+
+// get terminal size info
+void get_screen_buffer_info(terminalBufferSize* ts)
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
+    ts->x = csbiInfo.dwSize.X;
+    ts->y = csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top;
+}
+
+static int temp1, temp2;
+terminalBufferSize* ts = new terminalBufferSize;
+
+void set_centered_text()
+{
+    while (true)
+    {
+        get_screen_buffer_info(ts);
+        std::cout << "prt" << std::endl;
+        if (ts->x != temp1 || ts->y != temp2)
+        {
+
+            go_to_xy(temp1 / 2, temp2 / 2);
+            temp1 = ts->x; temp2 = ts->y;
+        }
+    }
+}
+
 
 void MainMenu()
 {
@@ -114,7 +157,15 @@ void Menu2()
 
 int main() {
 
+    get_screen_buffer_info(ts);
+    temp1 = ts->x; temp2 = ts->y;
+    go_to_xy(temp1 / 2, temp2 / 2);
+    std::thread recenter_loop(set_centered_text);
+
     MainMenu();
+
+
+    recenter_loop.join();
     return 0;
 
 }
