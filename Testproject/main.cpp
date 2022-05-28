@@ -16,6 +16,7 @@ int main() {
 	Menu m1(MainMenuItems);
 	MenuRenderer menu;
 
+
 	while (true)
 	{
 		menu.render(&m1);

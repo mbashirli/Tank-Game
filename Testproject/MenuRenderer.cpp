@@ -41,7 +41,8 @@ void MenuRenderer::render(Menu* m1)
 	get_screen_buffer_info();
 	if (tempX != struct_coordinates.x || tempY != struct_coordinates.y)
 	{
-		clear_terminal(m1);
+		ClearScreen();
+		ShowConsoleCursor(false);
 		tempX = struct_coordinates.x; tempY = struct_coordinates.y;
 		out_centered_text(m1->get_options());
 	}
@@ -88,3 +89,52 @@ void MenuRenderer::clear_terminal(Menu* m1)
 }
 
 
+void MenuRenderer::ShowConsoleCursor(bool showFlag)
+{
+	{
+		HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+
+		CONSOLE_CURSOR_INFO     cursorInfo;
+
+		GetConsoleCursorInfo(out, &cursorInfo);
+		cursorInfo.bVisible = showFlag; // set the cursor visibility
+		SetConsoleCursorInfo(out, &cursorInfo);
+	}
+}
+
+void MenuRenderer::ClearScreen()
+{
+	HANDLE                     hStdOut;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD                      count;
+	DWORD                      cellCount;
+	COORD                      homeCoords = { 0, 0 };
+
+	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	if (hStdOut == INVALID_HANDLE_VALUE) return;
+
+	/* Get the number of cells in the current buffer */
+	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
+	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+
+	/* Fill the entire buffer with spaces */
+	if (!FillConsoleOutputCharacter(
+		hStdOut,
+		(TCHAR)' ',
+		cellCount,
+		homeCoords,
+		&count
+	)) return;
+
+	/* Fill the entire buffer with the current colors and attributes */
+	if (!FillConsoleOutputAttribute(
+		hStdOut,
+		csbi.wAttributes,
+		cellCount,
+		homeCoords,
+		&count
+	)) return;
+
+	/* Move the cursor home */
+	SetConsoleCursorPosition(hStdOut, homeCoords);
+}
