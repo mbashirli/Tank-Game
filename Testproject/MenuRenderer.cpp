@@ -38,11 +38,13 @@ void MenuRenderer::out_centered_text(std::vector <std::string> input)
 
 void MenuRenderer::render(Menu* m1)
 {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
 	get_screen_buffer_info();
+	ShowConsoleCursor(false);
 	if (tempX != struct_coordinates.x || tempY != struct_coordinates.y)
 	{
-		ClearScreen();
-		ShowConsoleCursor(false);
+		clear_terminal(m1);
 		tempX = struct_coordinates.x; tempY = struct_coordinates.y;
 		out_centered_text(m1->get_options());
 	}
@@ -52,11 +54,21 @@ void MenuRenderer::clear_terminal(Menu* m1)
 {
 	int options_vector_size = m1->get_options().size();
 	int localTempX = tempX, localTempY = tempY;
+
+	for (int i = 0; i < options_vector_size; i = i + 1)
+	{
+		go_to_xy(0, struct_coordinates.y + i);
+		for (int j = 0; j < m1->get_options()[i].length(); j = j + 1)
+			std::cout << " ";
+	}
+
+
 	for (int i = 0; i < options_vector_size; i = i + 1)
 	{
 		int string_length = m1->get_options()[i].length();
-		if (localTempX < struct_coordinates.x || localTempX > struct_coordinates.x)
+		if (localTempX < struct_coordinates.x && localTempY == struct_coordinates.y)
 		{
+			//std::cout << localTempX << "  " << struct_coordinates.x << "1" << std::endl;
 			go_to_xy(localTempX, localTempY);
 			while (string_length != 0)
 			{
@@ -64,9 +76,58 @@ void MenuRenderer::clear_terminal(Menu* m1)
 				string_length -= 1;
 			}
 			localTempY += 1;
+			go_to_xy(0, 0);
+		
+}
+		else if (localTempX < struct_coordinates.x && localTempY > struct_coordinates.y) {
+			//std::cout << localTempX << "  " << struct_coordinates.x << " 2" << std::endl;
+			go_to_xy(localTempX, localTempY);
+			while (string_length != 0)
+			{
+				std::cout << " ";
+				string_length -= 1;
+			}
+			localTempY += 1;
+			go_to_xy(0, 0);
+
 		}
-		else if (localTempY < struct_coordinates.y)
+		else if (localTempX < struct_coordinates.x && localTempY < struct_coordinates.y)
 		{
+			//std::cout << localTempX << "  " << struct_coordinates.x << " 3" << std::endl;
+			go_to_xy(localTempX, localTempY);
+			while (string_length != 0)
+			{
+				std::cout << " ";
+				string_length -= 1;
+			}
+			localTempY += 1;
+			go_to_xy(0, 0);
+		}
+		else if (localTempX > struct_coordinates.x && localTempY > struct_coordinates.y) {
+			//std::cout << localTempX << "  " << struct_coordinates.x << "4";
+			go_to_xy(localTempX, localTempY);
+			while (string_length != 0)
+			{
+				std::cout << " ";
+				string_length -= 1;
+			}
+			localTempY += 1;
+			go_to_xy(0, 0);
+		}
+		else if (localTempX > struct_coordinates.x && localTempY == struct_coordinates.y) {
+			//std::cout << localTempX << "  " << struct_coordinates.x << "4";
+			go_to_xy(localTempX, localTempY);
+			while (string_length != 0)
+			{
+				std::cout << " ";
+				string_length -= 1;
+			}
+			localTempY += 1;
+			go_to_xy(0, 0);
+		}
+		else if (localTempY < struct_coordinates.y )
+		{
+			//std::cout << localTempX << "  " << struct_coordinates.x << "5";
 			go_to_xy(localTempX, localTempY);
 			while (string_length != 0)
 			{
@@ -76,65 +137,42 @@ void MenuRenderer::clear_terminal(Menu* m1)
 			localTempX += 1;
 		}
 		else if (localTempY > struct_coordinates.y)
-		{;
+		{
+			//std::cout << localTempX << "  " << struct_coordinates.x << "6";
 			go_to_xy(localTempX, localTempY);
 			while (string_length != 0)
 			{
 				std::cout << " ";
 				string_length -= 1;
 			}
-			localTempX += 1;
+			localTempY += 1;
+		}
+		else {
+			std::cout << localTempX << "  " << struct_coordinates.x << "7";
+				
 		}
 	}
+	
 }
-
 
 void MenuRenderer::ShowConsoleCursor(bool showFlag)
 {
-	{
-		HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 
-		CONSOLE_CURSOR_INFO     cursorInfo;
+	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 
-		GetConsoleCursorInfo(out, &cursorInfo);
-		cursorInfo.bVisible = showFlag; // set the cursor visibility
-		SetConsoleCursorInfo(out, &cursorInfo);
-	}
+	CONSOLE_CURSOR_INFO     cursorInfo;
+
+	GetConsoleCursorInfo(out, &cursorInfo);
+	cursorInfo.bVisible = showFlag; // set the cursor visibility
+	SetConsoleCursorInfo(out, &cursorInfo);
+
 }
 
-void MenuRenderer::ClearScreen()
+void MenuRenderer::clearterminal(int x, int  y)
 {
-	HANDLE                     hStdOut;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD                      count;
-	DWORD                      cellCount;
-	COORD                      homeCoords = { 0, 0 };
 
-	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (hStdOut == INVALID_HANDLE_VALUE) return;
-
-	/* Get the number of cells in the current buffer */
-	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
-	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-
-	/* Fill the entire buffer with spaces */
-	if (!FillConsoleOutputCharacter(
-		hStdOut,
-		(TCHAR)' ',
-		cellCount,
-		homeCoords,
-		&count
-	)) return;
-
-	/* Fill the entire buffer with the current colors and attributes */
-	if (!FillConsoleOutputAttribute(
-		hStdOut,
-		csbi.wAttributes,
-		cellCount,
-		homeCoords,
-		&count
-	)) return;
-
-	/* Move the cursor home */
-	SetConsoleCursorPosition(hStdOut, homeCoords);
+	static const HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	std::cout.flush();
+	COORD coord = { (SHORT)x, (SHORT)y };
+	SetConsoleCursorPosition(hOut, coord);
 }
