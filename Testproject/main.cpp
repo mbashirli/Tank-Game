@@ -12,6 +12,8 @@ int main() {
 	MainMenuItems.push_back("Menyu 1");
 	MainMenuItems.push_back("Menyu 2");
 	MainMenuItems.push_back("Menyu 3");
+	MainMenuItems.push_back("Menyu 4");
+	MainMenuItems.push_back("Menyu 5");
 
 	Menu m1(MainMenuItems);
 	MenuRenderer menu;
