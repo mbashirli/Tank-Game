@@ -3,8 +3,10 @@
 #include "Menu.h"
 #include "MenuRenderer.h"
 #include <vector>
+#include "Config.h"
 
 #define ENTER 13
+
 
 void mainMenu();
 void newGameMenu();
@@ -13,6 +15,8 @@ void settingsMenu();
 
 void mainMenu()
 {
+	Config::getInstance().loadConfig();
+
 	std::vector <std::string> MainMenuItems;
 	MainMenuItems.push_back("New Game");
 	MainMenuItems.push_back("Settings");
