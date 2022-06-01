@@ -4,7 +4,11 @@
 #include <string>
 #include <iostream>
 #include "Menu.h"
+#include <conio.h>
 
+#define UP 72
+#define DOWN 80
+#define ENTER 13
 
 struct MenuStartPosition {
 	int x, y;
@@ -14,18 +18,23 @@ struct MenuStartPosition {
 class MenuRenderer
 {
 public:
-	MenuRenderer();
-	~MenuRenderer();
-	void go_to_xy(); // based on spX & spY
+	MenuRenderer(Menu* _menu);
 	void go_to_xy(short x, short y);
-	void get_screen_buffer_info();
-	void out_centered_text(std::vector <std::string> input);
-	void render(Menu* m1);
-	void clear_terminal(Menu* m1);
+	MenuStartPosition getScreenBufferInfo();
+	void outCenteredText();
+	void render();
+	void clearTerminal();
 	void ShowConsoleCursor(bool showFlag);
-	void clearterminal(int x, int y);
+	void setTitleActiveColor();
+	void setTitleInactiveColor();
+	void updateActiveTitleID();
+	bool consoleWindowSizeChanged();
+	void updateMenuPosition();
+	int getActiveTitleID();
+
 private:
-	MenuStartPosition struct_coordinates;
-	short tempX = 0, tempY = 0;
+	MenuStartPosition menuPosition;
+	int activeTitleID;
+	Menu* menu;
 };
 
