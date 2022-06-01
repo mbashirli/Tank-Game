@@ -23,7 +23,7 @@ public:
 	void render(Menu* m1);
 	void clear_terminal(Menu* m1);
 	void ShowConsoleCursor(bool showFlag);
-	void ClearScreen();
+	void clearterminal(int x, int y);
 private:
 	MenuStartPosition struct_coordinates;
 	short tempX = 0, tempY = 0;
