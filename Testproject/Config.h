@@ -18,6 +18,7 @@ public:
 private:
 	static Config* instance;
 	std::fstream configFile;
+	std::string configFileName = "config.txt";
 	std::map <std::string, std::string> configSettings;
 };
 

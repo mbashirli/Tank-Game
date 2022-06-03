@@ -19,7 +19,7 @@ Config::~Config()
 
 void Config::loadConfig()
 {
-	//configFile.open("config.txt");
+	configFile.open(configFileName);
 	std::map<std::string, std::string>::iterator itr;
 	itr = configSettings.begin();
 	std::string line;
@@ -31,6 +31,15 @@ void Config::loadConfig()
 			itr++;
 		}
 	}
+	else
+	{
+		std::ofstream newConfigFile;
+		newConfigFile.open("config.txt");
+		loadConfig();
+		configFile.close();
+	}
+
+	configFile.close();
 }
 
 void Config::saveNewMenuColor(std::string newMenuColor)
