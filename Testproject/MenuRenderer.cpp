@@ -5,6 +5,7 @@ MenuRenderer::MenuRenderer(Menu* _menu)
 {
 	this->menu = _menu;
 	activeTitleID = 1;
+	setMenuActiveColor("default");
 }
 
 void MenuRenderer::go_to_xy(short x, short y)
@@ -38,6 +39,20 @@ void MenuRenderer::outCenteredText()
 
 }
 
+void MenuRenderer::setMenuActiveColor(std::string menuColor)
+{
+	if (menuColor == "Green")
+		this->menuColor = 2;
+	else if (menuColor == "Red")
+		this->menuColor = 4;
+	else if (menuColor == "Purple")
+		this->menuColor = 5;
+	else if (menuColor == "Yellow")
+		this->menuColor = 6;
+	else
+		this->menuColor = 7; // default: white
+}
+
 void MenuRenderer::setTitleActiveColor()
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -47,7 +62,7 @@ void MenuRenderer::setTitleActiveColor()
 void MenuRenderer::setTitleInactiveColor()
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+	SetConsoleTextAttribute(hConsole, this->menuColor);
 }
 
 
@@ -94,7 +109,7 @@ void MenuRenderer::updateMenuPosition() {
 void MenuRenderer::render()
 {
 	outCenteredText();
-	ShowConsoleCursor(false);
+	showConsoleCursor(false);
 }
 
 void MenuRenderer::clearTerminal()
@@ -118,7 +133,7 @@ void MenuRenderer::clearTerminal()
 	go_to_xy(0, 0);
 }
 
-void MenuRenderer::ShowConsoleCursor(bool showFlag)
+void MenuRenderer::showConsoleCursor(bool showFlag)
 {
 
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);

@@ -1,18 +1,23 @@
 #pragma once
 #include <string>
+#include <iostream>
+#include <fstream>
 
 
 class Config
 {
 public:
-	std::string menuColor;
+	Config();
+	~Config();
 	static Config& getInstance();
-private:
-	~Config() {};
-	Config() {};
-	std::string menuColor;
-	static Config* instance;
+	void loadConfig();
+	void saveNewMenuColor(std::string newMenuColor);
+	void updateConfigFile();
+	std::string getCurrentMenuColor();
 
-	
+private:
+	static Config* instance;
+	std::string menuColor;
+	std::fstream configFile;
 };
 

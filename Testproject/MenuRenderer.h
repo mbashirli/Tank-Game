@@ -24,7 +24,8 @@ public:
 	void outCenteredText();
 	void render();
 	void clearTerminal();
-	void ShowConsoleCursor(bool showFlag);
+	void showConsoleCursor(bool showFlag);
+	void setMenuActiveColor(std::string menuColor);
 	void setTitleActiveColor();
 	void setTitleInactiveColor();
 	void updateActiveTitleID();
@@ -35,6 +36,7 @@ public:
 private:
 	MenuStartPosition menuPosition;
 	int activeTitleID;
+	int menuColor;
 	Menu* menu;
 };
 

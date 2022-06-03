@@ -4,6 +4,7 @@
 #include "MenuRenderer.h"
 #include <vector>
 #include "Config.h"
+#include <fstream>
 
 #define ENTER 13
 
@@ -11,10 +12,12 @@
 void mainMenu();
 void newGameMenu();
 void settingsMenu();
+void settingsColorMenu();
 
 
 void mainMenu()
 {
+
 	Config::getInstance().loadConfig();
 
 	std::vector <std::string> MainMenuItems;
@@ -108,6 +111,7 @@ void settingsMenu()
 {
 	std::vector <std::string> newGameMenuItems;
 
+	newGameMenuItems.push_back("Menu Color");
 	newGameMenuItems.push_back("Resolution");
 	newGameMenuItems.push_back("Sound");
 	newGameMenuItems.push_back("Multi-player settings");
@@ -130,7 +134,9 @@ void settingsMenu()
 				if (keyPressed == ENTER)
 				{
 					renderer.clearTerminal();
-					if (renderer.getActiveTitleID() == 4)
+					if (renderer.getActiveTitleID() == 1)
+						settingsColorMenu();
+					if (renderer.getActiveTitleID() == 5)
 						return;
 				}
 				else
@@ -147,9 +153,84 @@ void settingsMenu()
 
 }
 
-int main() {
+void settingsColorMenu() {
 
+	std::vector <std::string> colorSettingsMenuItems;
+
+	colorSettingsMenuItems.push_back("Green");
+	colorSettingsMenuItems.push_back("Red");
+	colorSettingsMenuItems.push_back("Purple");
+	colorSettingsMenuItems.push_back("Yellow");
+	colorSettingsMenuItems.push_back("Default");
+
+
+	Menu menu(colorSettingsMenuItems);
+	MenuRenderer renderer(&menu);
+
+	renderer.render();
+
+	while (true)
+	{
+		bool isKeyPressed = _kbhit();
+
+		if (renderer.consoleWindowSizeChanged() || isKeyPressed)
+		{
+			if (isKeyPressed)
+			{
+				int keyPressed = _getch();
+				if (keyPressed == ENTER)
+				{
+					renderer.clearTerminal();
+					if (renderer.getActiveTitleID() == 1)
+					{
+						Config::getInstance().saveNewMenuColor("Green");
+						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+						return;
+					}
+					if (renderer.getActiveTitleID() == 2)
+					{
+						Config::getInstance().saveNewMenuColor("Red");
+						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+						return;
+					}
+					if (renderer.getActiveTitleID() == 3)
+					{
+						Config::getInstance().saveNewMenuColor("Purple");
+						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+						return;
+					}
+					if (renderer.getActiveTitleID() == 4)
+					{
+						Config::getInstance().saveNewMenuColor("Yellow");
+						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+						return;
+					}
+					if (renderer.getActiveTitleID() == 5) 
+					{
+						Config::getInstance().saveNewMenuColor("Default");
+						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+						return;
+					}
+					if (renderer.getActiveTitleID() == 6)
+					{
+						return;
+					}
+				}
+				else
+					renderer.updateActiveTitleID();
+			}
+			renderer.clearTerminal();
+
+			renderer.updateMenuPosition();
+
+			renderer.render();
+
+		}
+	}
+}
+
+int main()
+{
 	mainMenu();
-
 	return 0;
 }
