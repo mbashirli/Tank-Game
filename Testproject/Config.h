@@ -13,6 +13,7 @@ public:
 	static Config& getInstance();
 	void loadConfig();
 	void saveNewMenuColor(std::string newMenuColor);
+	void createConfigFile();
 	std::string getCurrentMenuColor();
 
 private:

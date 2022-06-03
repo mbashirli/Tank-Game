@@ -1,8 +1,5 @@
 #include "Menu.h"
 
-Menu::Menu()
-{
-}
 
 Menu::Menu(std::vector <std::string> ops)
 {

@@ -5,7 +5,6 @@
 class Menu
 {
 public:
-	Menu();
 	Menu(std::vector<std::string> ops);
 	void setOptions(std::vector <std::string> ops);
 	std::vector <std::string> getOptions();

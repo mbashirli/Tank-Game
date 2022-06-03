@@ -19,8 +19,8 @@ class MenuRenderer
 {
 public:
 	MenuRenderer(Menu* _menu);
-	void go_to_xy(short x, short y);
 	MenuStartPosition getScreenBufferInfo();
+	void go_to_xy(short x, short y);
 	void outCenteredText();
 	void render();
 	void clearTerminal();
@@ -29,16 +29,15 @@ public:
 	void setTitleActiveColor();
 	void setTitleInactiveColor();
 	void updateActiveTitleID();
+	void updateMenuPosition();
 	bool consoleWindowSizeChanged();
 	bool menuColorChanged();
-	void updateMenuPosition();
 	int getActiveTitleID();
-
 private:
+	Menu* menu;
 	MenuStartPosition menuPosition;
 	int activeTitleID;
 	int menuColor;
 	bool isMenuColorChanged;
-	Menu* menu;
 };
 
