@@ -7,18 +7,11 @@ Config& Config::getInstance()
     return instance;
 }
 
-Config::Config()
-{
-    configFile.open("config.txt");
-	if (configFile.is_open())
-	{
-		while (configFile)
-		{
-			std::getline(configFile, menuColor);
-		}
-	}
-}
+Config::Config(){
+	
+	configSettings.insert(std::map <std::string, std::string>:: value_type("Menu Color", "Default"));
 
+}
 Config::~Config()
 {
     configFile.close();
@@ -26,21 +19,28 @@ Config::~Config()
 
 void Config::loadConfig()
 {
-
-}
-
-void Config::updateConfigFile()
-{
-	configFile << menuColor;
+	//configFile.open("config.txt");
+	std::map<std::string, std::string>::iterator itr;
+	itr = configSettings.begin();
+	std::string line;
+	if (configFile.is_open())
+	{
+		while (std::getline(configFile, line))
+		{
+			configSettings[itr->first] = line;
+			itr++;
+		}
+	}
 }
 
 void Config::saveNewMenuColor(std::string newMenuColor)
 {
-	menuColor = newMenuColor;
-	updateConfigFile();
+	configSettings["Menu Color"] = newMenuColor;
+	std::ofstream configFile("config.txt");
+	configFile << configSettings["Menu Color"];
 }
 
 std::string Config::getCurrentMenuColor()
 {
-	return menuColor;
+	return configSettings["Menu Color"];
 }

@@ -5,10 +5,10 @@
 #include <iostream>
 #include "Menu.h"
 #include <conio.h>
+#include "Config.h"
 
-#define UP 72
-#define DOWN 80
-#define ENTER 13
+#define KEY_UP 72
+#define KEY_DOWN 80
 
 struct MenuStartPosition {
 	int x, y;
@@ -30,6 +30,7 @@ public:
 	void setTitleInactiveColor();
 	void updateActiveTitleID();
 	bool consoleWindowSizeChanged();
+	bool menuColorChanged();
 	void updateMenuPosition();
 	int getActiveTitleID();
 
@@ -37,6 +38,7 @@ private:
 	MenuStartPosition menuPosition;
 	int activeTitleID;
 	int menuColor;
+	bool isMenuColorChanged;
 	Menu* menu;
 };
 

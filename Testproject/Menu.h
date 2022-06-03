@@ -9,7 +9,6 @@ public:
 	Menu(std::vector<std::string> ops);
 	void setOptions(std::vector <std::string> ops);
 	std::vector <std::string> getOptions();
-	void render();
 private:
 	std::vector <std::string> options;
 };

@@ -6,7 +6,7 @@
 #include "Config.h"
 #include <fstream>
 
-#define ENTER 13
+#define KEY_ENTER 13
 
 
 void mainMenu();
@@ -32,13 +32,12 @@ void mainMenu()
 	while (true)
 	{
 		bool isKeyPressed = _kbhit();
-
 		if (renderer.consoleWindowSizeChanged() || isKeyPressed)
 		{
 			if (isKeyPressed)
 			{
 				int keyPressed = _getch();
-				if (keyPressed == ENTER)
+				if (keyPressed == KEY_ENTER)
 				{
 					renderer.clearTerminal();
 					if (renderer.getActiveTitleID() == 1)
@@ -50,9 +49,9 @@ void mainMenu()
 				}
 				else
 					renderer.updateActiveTitleID();
-
 			}
 
+			renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 			renderer.clearTerminal();
 
 			renderer.updateMenuPosition();
@@ -82,12 +81,12 @@ void newGameMenu()
 	{
 		bool isKeyPressed = _kbhit();
 
-		if (renderer.consoleWindowSizeChanged() || isKeyPressed)
+		if (renderer.consoleWindowSizeChanged() || isKeyPressed || renderer.menuColorChanged())
 		{
 			if (isKeyPressed)
 			{
 				int keyPressed = _getch();
-				if (keyPressed == ENTER)
+				if (keyPressed == KEY_ENTER)
 				{
 					renderer.clearTerminal();
 					if (renderer.getActiveTitleID() == 4)
@@ -96,6 +95,8 @@ void newGameMenu()
 				else
 					renderer.updateActiveTitleID();
 			}
+			if (renderer.menuColorChanged())
+				renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 			renderer.clearTerminal();
 
 			renderer.updateMenuPosition();
@@ -128,10 +129,11 @@ void settingsMenu()
 
 		if (renderer.consoleWindowSizeChanged() || isKeyPressed)
 		{
+			renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 			if (isKeyPressed)
 			{
 				int keyPressed = _getch();
-				if (keyPressed == ENTER)
+				if (keyPressed == KEY_ENTER)
 				{
 					renderer.clearTerminal();
 					if (renderer.getActiveTitleID() == 1)
@@ -142,6 +144,9 @@ void settingsMenu()
 				else
 					renderer.updateActiveTitleID();
 			}
+			if (renderer.menuColorChanged())
+				renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+
 			renderer.clearTerminal();
 
 			renderer.updateMenuPosition();
@@ -178,7 +183,7 @@ void settingsColorMenu() {
 			if (isKeyPressed)
 			{
 				int keyPressed = _getch();
-				if (keyPressed == ENTER)
+				if (keyPressed == KEY_ENTER)
 				{
 					renderer.clearTerminal();
 					if (renderer.getActiveTitleID() == 1)
@@ -205,7 +210,7 @@ void settingsColorMenu() {
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 						return;
 					}
-					if (renderer.getActiveTitleID() == 5) 
+					if (renderer.getActiveTitleID() == 5)
 					{
 						Config::getInstance().saveNewMenuColor("Default");
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
@@ -232,5 +237,7 @@ void settingsColorMenu() {
 int main()
 {
 	mainMenu();
+
+
 	return 0;
 }

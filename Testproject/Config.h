@@ -2,6 +2,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 
 class Config
@@ -12,12 +13,11 @@ public:
 	static Config& getInstance();
 	void loadConfig();
 	void saveNewMenuColor(std::string newMenuColor);
-	void updateConfigFile();
 	std::string getCurrentMenuColor();
 
 private:
 	static Config* instance;
-	std::string menuColor;
 	std::fstream configFile;
+	std::map <std::string, std::string> configSettings;
 };
 
