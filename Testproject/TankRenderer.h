@@ -12,6 +12,7 @@
 
 struct startPosition {
 	int x, y;
+
 };
 
 class TankRenderer

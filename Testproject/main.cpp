@@ -6,6 +6,7 @@
 #include "Config.h"
 #include <fstream>
 #include <map>
+#include <mutex>
 #include "TankRenderer.h"
 #define KEY_ENTER 13
 
@@ -21,11 +22,13 @@ void tankGame()
 {
 	TankRenderer newTank;
 	newTank.renderTank();
+	std::mutex m;
 	while (true)
 	{
 		bool isKeyPressed = _kbhit();
 		if (isKeyPressed = true)
 		{
+
 			newTank.moveTank();
 			newTank.renderBullet();
 		}
@@ -38,7 +41,6 @@ int main(int argc, char** argv, char** envp)
 {
 	//setConfigName(argv, envp);
 	//mainMenu();
-
 	tankGame();
 	int x; std::cin >> x;
 	return 0;
