@@ -27,6 +27,7 @@ void tankGame()
 		if (isKeyPressed = true)
 		{
 			newTank.moveTank();
+			newTank.renderBullet();
 		}
 	}
 	
@@ -39,7 +40,6 @@ int main(int argc, char** argv, char** envp)
 	//mainMenu();
 
 	tankGame();
-
 	int x; std::cin >> x;
 	return 0;
 }

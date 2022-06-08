@@ -8,8 +8,9 @@
 #define KEY_DOWN 80
 #define KEY_RIGHT 77
 #define KEY_LEFT 75
+#define KEY_SPACE 32
 
-struct tankStartPosition {
+struct startPosition {
 	int x, y;
 };
 
@@ -18,18 +19,26 @@ class TankRenderer
 public:
 	TankRenderer();
 	~TankRenderer();
-	tankStartPosition getScreenBufferInfo();
+	startPosition getScreenBufferInfo();
 	void goToXY(short x, short y);
 	void renderTank();
+	void setTankPosition();
 	void disableConsoleCursor();
 	void moveTank();
 	void clearTankVertical();
 	void clearTankHorizontal();
-	void clearTank();
+	void renderBullet();
+
+	int getTerminalEastCoordinate();
+	int getTerminalSouthCoordinate();
 private:
-	tankStartPosition currentTankPosition;
-	enum tankDirectionPoints { NORTH, SOUTH, EAST, WEST };
+	startPosition currentTankPosition;
+	startPosition currentBulletPosition;
+	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+
+	enum directionPoints { UP, DOWN, LEFT, RIGHT };
 	char tankBlock;
 	int tankDirection;
+	int bulletDirection;
 };
 
