@@ -6,14 +6,43 @@
 #include "Config.h"
 #include <fstream>
 #include <map>
+#include "TankRenderer.h"
 #define KEY_ENTER 13
 
 
 void mainMenu();
-void newGameMenu();
+void newGameMenu();;
 void settingsMenu();
 void settingsColorMenu();
+void setConfigName(char **argv, char** envp);
 
+
+void tankGame()
+{
+	TankRenderer newTank;
+	newTank.renderTank();
+	while (true)
+	{
+		bool isKeyPressed = _kbhit();
+		if (isKeyPressed = true)
+		{
+			newTank.moveTank();
+		}
+	}
+	
+}
+
+
+int main(int argc, char** argv, char** envp)
+{
+	//setConfigName(argv, envp);
+	//mainMenu();
+
+	tankGame();
+
+	int x; std::cin >> x;
+	return 0;
+}
 
 void mainMenu()
 {
@@ -238,53 +267,38 @@ void settingsColorMenu() {
 	}
 }
 
-std::string environmentalValuesScanner(char **envp)
+std::string environmentalValuesScanner(char** envp)
 {
-	std::map <std::string, std::string> environmentalVariables;
-	for (char** env = envp; *env != 0; *env++)
+	std::map <std::string, std::string> envVariables;
+	for (char** env = envp; *env != 0; *(env++))
 	{
 		std::string firstValue, secondValue, variable = *env;
-		int i;
-		for (i = 0; i < variable.length(); i = i + 1)
-		{
-			if (variable[i] == '=')
-			{
-				break;
-			}
-		}
+		int i = variable.find_first_of('=');
 		firstValue.append(variable, 0, i);
 		secondValue.append(variable, i + 1, variable.length());
-		environmentalVariables.insert(std::make_pair(firstValue, secondValue));
+		envVariables.insert(std::make_pair(firstValue, secondValue));
 	}
 
-	if (!environmentalVariables["CONFIG"].empty())
-		return environmentalVariables["CONFIG"];
+	if (!envVariables["CONFIG"].empty())
+		return envVariables["CONFIG"];
 	return "NULL";
 }
 
-void setConfigName(char **argv, char **envp)
+void setConfigName(char** argv, char** envp)
 {
-	std::string environmentalConfigValue = environmentalValuesScanner(envp);
+	std::string envConfigValue = environmentalValuesScanner(envp);
 	if (argv[1] != NULL)
 	{
 		Config::getInstance().changeConfigName(argv[1]);
 	}
-	else if (environmentalConfigValue != "NULL")
+	else if (envConfigValue != "NULL")
 	{
-		Config::getInstance().changeConfigName(environmentalConfigValue);
+		Config::getInstance().changeConfigName(envConfigValue);
 	}
-	else 
+	else
 	{
 		Config::getInstance().changeConfigName("config.txt");
 	}
 
 	system("cls");
-}
-
-
-int main(int argc, char** argv, char** envp)
-{
-	setConfigName(argv, envp);
-	mainMenu();
-	return 0;
 }
