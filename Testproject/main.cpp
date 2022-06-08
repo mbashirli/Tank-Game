@@ -5,7 +5,7 @@
 #include <vector>
 #include "Config.h"
 #include <fstream>
-
+#include <map>
 #define KEY_ENTER 13
 
 
@@ -185,34 +185,38 @@ void settingsColorMenu() {
 				int keyPressed = _getch();
 				if (keyPressed == KEY_ENTER)
 				{
+
 					renderer.clearTerminal();
+					enum consoleColor {
+						RED = 4, GREEN = 2, PURPLE = 5, YELLOW = 6, DEFAULT = 7
+					};
 					if (renderer.getActiveTitleID() == 1)
 					{
-						Config::getInstance().saveNewMenuColor("Green");
+						Config::getInstance().saveNewMenuColor(consoleColor::GREEN);
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 						return;
 					}
 					if (renderer.getActiveTitleID() == 2)
 					{
-						Config::getInstance().saveNewMenuColor("Red");
+						Config::getInstance().saveNewMenuColor(consoleColor::RED);
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 						return;
 					}
 					if (renderer.getActiveTitleID() == 3)
 					{
-						Config::getInstance().saveNewMenuColor("Purple");
+						Config::getInstance().saveNewMenuColor(consoleColor::PURPLE);
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 						return;
 					}
 					if (renderer.getActiveTitleID() == 4)
 					{
-						Config::getInstance().saveNewMenuColor("Yellow");
+						Config::getInstance().saveNewMenuColor(consoleColor::YELLOW);
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 						return;
 					}
 					if (renderer.getActiveTitleID() == 5)
 					{
-						Config::getInstance().saveNewMenuColor("Default");
+						Config::getInstance().saveNewMenuColor(consoleColor::DEFAULT);
 						renderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
 						return;
 					}
@@ -234,10 +238,53 @@ void settingsColorMenu() {
 	}
 }
 
-int main()
+std::string environmentalValuesScanner(char **envp)
 {
+	std::map <std::string, std::string> environmentalVariables;
+	for (char** env = envp; *env != 0; *env++)
+	{
+		std::string firstValue, secondValue, variable = *env;
+		int i;
+		for (i = 0; i < variable.length(); i = i + 1)
+		{
+			if (variable[i] == '=')
+			{
+				break;
+			}
+		}
+		firstValue.append(variable, 0, i);
+		secondValue.append(variable, i + 1, variable.length());
+		environmentalVariables.insert(std::make_pair(firstValue, secondValue));
+	}
+
+	if (!environmentalVariables["CONFIG"].empty())
+		return environmentalVariables["CONFIG"];
+	return "NULL";
+}
+
+void setConfigName(char **argv, char **envp)
+{
+	std::string environmentalConfigValue = environmentalValuesScanner(envp);
+	if (argv[1] != NULL)
+	{
+		Config::getInstance().changeConfigName(argv[1]);
+	}
+	else if (environmentalConfigValue != "NULL")
+	{
+		Config::getInstance().changeConfigName(environmentalConfigValue);
+	}
+	else 
+	{
+		Config::getInstance().changeConfigName("config.txt");
+	}
+
+	system("cls");
+}
+
+
+int main(int argc, char** argv, char** envp)
+{
+	setConfigName(argv, envp);
 	mainMenu();
-
-
 	return 0;
 }

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
-
+#include <vector>
 
 class Config
 {
@@ -12,14 +12,18 @@ public:
 	~Config();
 	static Config& getInstance();
 	void loadConfig();
-	void saveNewMenuColor(std::string newMenuColor);
+	void saveNewMenuColor(int newcolor);
 	void createConfigFile();
-	std::string getCurrentMenuColor();
+	void changeConfigName(std::string newConfigName);
+	int getCurrentMenuColor();
 
 private:
+	enum ConfigKeys { MENU_COLOR };
 	static Config* instance;
-	std::fstream configFile;
-	std::string configFileName = "config.txt";
+	int menuColor;
+	std::ifstream configFile;
+	std::vector<int> configKeys;
+	std::string configFileName;
 	std::map <std::string, std::string> configSettings;
 };
 

@@ -6,6 +6,7 @@
 #include "Menu.h"
 #include <conio.h>
 #include "Config.h"
+#include <sstream>
 
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -13,7 +14,6 @@
 struct MenuStartPosition {
 	int x, y;
 };
-
 
 class MenuRenderer
 {
@@ -25,7 +25,7 @@ public:
 	void render();
 	void clearTerminal();
 	void showConsoleCursor(bool showFlag);
-	void setMenuActiveColor(std::string menuColor);
+	void setMenuActiveColor(int menuColor);
 	void setTitleActiveColor();
 	void setTitleInactiveColor();
 	void updateActiveTitleID();

@@ -40,19 +40,11 @@ void MenuRenderer::outCenteredText()
 
 }
 
-void MenuRenderer::setMenuActiveColor(std::string menuColor)
-{
-	if (menuColor == "Green")
-		this->menuColor = 2;
-	else if (menuColor == "Red")
-		this->menuColor = 4;
-	else if (menuColor == "Purple")
-		this->menuColor = 5;
-	else if (menuColor == "Yellow")
-		this->menuColor = 6;
-	else
-		this->menuColor = 7; // DEFAULT: white
 
+void MenuRenderer::setMenuActiveColor(int menuColor)
+{
+
+	this->menuColor = menuColor;
 	isMenuColorChanged = true;
 }
 
