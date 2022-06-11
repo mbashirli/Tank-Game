@@ -8,10 +8,10 @@ TankRenderer::TankRenderer() {
 }
 TankRenderer::~TankRenderer() {}
 
-startPosition TankRenderer::getScreenBufferInfo()
+tankPosition TankRenderer::getScreenBufferInfo()
 {
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-	startPosition coordinates;
+	tankPosition coordinates;
 	coordinates.x = csbiInfo.dwSize.X / 2;
 	coordinates.y = (csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top) / 2;
 	return coordinates;
@@ -171,87 +171,13 @@ void TankRenderer::clearTankVertical()
 	}
 }
 
-void TankRenderer::renderBullet()
+
+int TankRenderer::getTankDirection()
 {
-	int keyPressed = _getch();
-	bulletDirection = tankDirection;
-	if (keyPressed == KEY_SPACE)
-	{
-		if (bulletDirection == directionPoints::UP)
-		{
-			currentBulletPosition.x = currentTankPosition.x + 1;
-			currentBulletPosition.y = currentTankPosition.y - 3;
-			while (currentBulletPosition.y != -1)
-			{
-				goToXY(currentBulletPosition.x, currentBulletPosition.y + 1);
-				Sleep(50);
-				std::cout << " ";
-				goToXY(currentBulletPosition.x, currentBulletPosition.y--);
-				std::cout << "*";
-			}
-			goToXY(currentBulletPosition.x, 0);
-			std::cout << " ";
-		}
-		else if (bulletDirection == directionPoints::DOWN)
-		{
-			currentBulletPosition.x = currentTankPosition.x + 1;
-			currentBulletPosition.y = currentTankPosition.y + 3;
-			int southCoordinate = getTerminalSouthCoordinate();
-			while (currentBulletPosition.y != southCoordinate)
-			{
-				goToXY(currentBulletPosition.x, currentBulletPosition.y - 1);
-				Sleep(50);
-				std::cout << " ";
-				goToXY(currentBulletPosition.x, currentBulletPosition.y++);
-				std::cout << "*";
-			}
-			goToXY(currentBulletPosition.x, southCoordinate - 1);
-			std::cout << " ";
-		}
-		else if (bulletDirection == directionPoints::LEFT)
-		{
-			currentBulletPosition.x = currentTankPosition.x - 3;
-			currentBulletPosition.y = currentTankPosition.y;
-			while (currentBulletPosition.x != -1)
-			{
-				goToXY(currentBulletPosition.x + 1, currentBulletPosition.y);
-				Sleep(50);
-				std::cout << " ";
-				goToXY(currentBulletPosition.x--, currentBulletPosition.y);
-				std::cout << "*";
-			}
-			goToXY(0, currentBulletPosition.y);
-			std::cout << " ";
-		}
-		else if (bulletDirection == directionPoints::RIGHT)
-		{
-			currentBulletPosition.x = currentTankPosition.x + 4;
-			currentBulletPosition.y = currentTankPosition.y;
-			int eastCoordinate = getTerminalEastCoordinate();
-			while (currentBulletPosition.x != eastCoordinate)
-			{
-				goToXY(currentBulletPosition.x - 1, currentBulletPosition.y);
-				Sleep(50);
-				std::cout << " ";
-				goToXY(currentBulletPosition.x++, currentBulletPosition.y);
-				std::cout << "*";
-			}
-			goToXY(eastCoordinate - 1, currentBulletPosition.y);
-			std::cout << " ";
-		}
-	}
+	return tankDirection;
 }
 
-int TankRenderer::getTerminalEastCoordinate()
+tankPosition TankRenderer::getCurrentTankPosition()
 {
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-	int eastCoordinate = csbiInfo.dwSize.X;
-	return eastCoordinate;
-}
-
-int TankRenderer::getTerminalSouthCoordinate()
-{
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-	int southCoordinate = csbiInfo.srWindow.Bottom;
-	return southCoordinate + 1;
+	return currentTankPosition;
 }

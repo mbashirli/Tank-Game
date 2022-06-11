@@ -30,7 +30,7 @@
     <ClCompile Include="TankRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tank.cpp">
+    <ClCompile Include="BulletRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +47,7 @@
     <ClInclude Include="TankRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tank.h">
+    <ClInclude Include="BulletRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,13 +1,18 @@
 ﻿#include <iostream>
-#include <windows.h>
-#include "Menu.h"
-#include "MenuRenderer.h"
 #include <vector>
-#include "Config.h"
 #include <fstream>
 #include <map>
+#include <thread>
 #include <mutex>
+#include <vector>
+#include <windows.h>
+#include "Config.h"
 #include "TankRenderer.h"
+#include "BulletRenderer.h"
+#include "Menu.h"
+#include "MenuRenderer.h"
+
+#define KEY_SPACE 32
 #define KEY_ENTER 13
 
 
@@ -15,34 +20,47 @@ void mainMenu();
 void newGameMenu();;
 void settingsMenu();
 void settingsColorMenu();
-void setConfigName(char **argv, char** envp);
+void setConfigName(char** argv, char** envp);
 
 
 void tankGame()
 {
 	TankRenderer newTank;
+	BulletRenderer newBullet(&newTank);
 	newTank.renderTank();
-	std::mutex m;
+	
+	//std::thread Bullet(&BulletRenderer::renderBullets, newBullet);
+	//
 	while (true)
 	{
+		
 		bool isKeyPressed = _kbhit();
-		if (isKeyPressed = true)
+		if (isKeyPressed)
 		{
-
-			newTank.moveTank();
-			newTank.renderBullet();
-		}
-	}
+			int keyPressed = _getch();
+			if (keyPressed == KEY_SPACE)
+			{
+				newBullet.addBullet();
 	
+			}
+			newTank.moveTank();
+		}
+		
+	}
+	//newBullet.join();
 }
 
 
+// ARRAYS !!
+
+struct Bullet {
+	int x, y;
+};
+
 int main(int argc, char** argv, char** envp)
 {
-	//setConfigName(argv, envp);
-	//mainMenu();
-	tankGame();
-	int x; std::cin >> x;
+	setConfigName(argv, envp);
+	mainMenu();
 	return 0;
 }
 
@@ -120,6 +138,11 @@ void newGameMenu()
 				if (keyPressed == KEY_ENTER)
 				{
 					renderer.clearTerminal();
+					if (renderer.getActiveTitleID() == 1)
+					{
+						renderer.clearTerminal();
+						tankGame();
+					}
 					if (renderer.getActiveTitleID() == 4)
 						return;
 				}

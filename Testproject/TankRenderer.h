@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include "Tank.h"
 #include <iostream>
 #include <conio.h>
 
@@ -10,7 +9,7 @@
 #define KEY_LEFT 75
 #define KEY_SPACE 32
 
-struct startPosition {
+struct tankPosition {
 	int x, y;
 
 };
@@ -20,7 +19,8 @@ class TankRenderer
 public:
 	TankRenderer();
 	~TankRenderer();
-	startPosition getScreenBufferInfo();
+	tankPosition getScreenBufferInfo();
+	tankPosition getCurrentTankPosition();
 	void goToXY(short x, short y);
 	void renderTank();
 	void setTankPosition();
@@ -28,15 +28,10 @@ public:
 	void moveTank();
 	void clearTankVertical();
 	void clearTankHorizontal();
-	void renderBullet();
-
-	int getTerminalEastCoordinate();
-	int getTerminalSouthCoordinate();
+	int getTankDirection();
 private:
-	startPosition currentTankPosition;
-	startPosition currentBulletPosition;
+	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-
 	enum directionPoints { UP, DOWN, LEFT, RIGHT };
 	char tankBlock;
 	int tankDirection;
