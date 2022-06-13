@@ -2,6 +2,8 @@
 #include <windows.h>
 #include <iostream>
 #include <conio.h>
+#include <mutex>
+#include "Application.h"
 
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -33,6 +35,7 @@ private:
 	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	enum directionPoints { UP, DOWN, LEFT, RIGHT };
+	std::mutex mtx;
 	char tankBlock;
 	int tankDirection;
 	int bulletDirection;

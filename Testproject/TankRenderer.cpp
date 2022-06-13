@@ -25,7 +25,10 @@ void TankRenderer::goToXY(short x, short y)
 
 void TankRenderer::renderTank()
 {
+	Application::getInstance()->lockCout();
 	setTankPosition();
+	Sleep(30);
+	Application::getInstance()->unlockCout();
 	disableConsoleCursor();
 }
 
@@ -38,7 +41,6 @@ void TankRenderer::setTankPosition()
 		std::cout << " " << tankBlock;
 		goToXY(currentTankPosition.x, currentTankPosition.y);
 		std::cout << tankBlock << tankBlock << tankBlock;
-
 	}
 	else if (tankDirection == directionPoints::DOWN)
 	{
@@ -46,6 +48,7 @@ void TankRenderer::setTankPosition()
 		std::cout << " " << tankBlock;
 		goToXY(currentTankPosition.x, currentTankPosition.y);
 		std::cout << tankBlock << tankBlock << tankBlock;
+
 	}
 	else if (tankDirection == directionPoints::LEFT)
 	{
@@ -152,16 +155,19 @@ void TankRenderer::disableConsoleCursor()
 
 void TankRenderer::clearTankHorizontal()
 {
+	Application::getInstance()->lockCout();
 	for (int i = -1; i < 4; i = i + 1)
 	{
 		goToXY(currentTankPosition.x - 1, currentTankPosition.y + i);
 		std::cout << "   ";
 		std::cout << "   ";
 	}
+	Application::getInstance()->unlockCout();
 }
 
 void TankRenderer::clearTankVertical()
 {
+	Application::getInstance()->lockCout();
 	for (int i = 0; i < 4; i = i + 1)
 	{
 		goToXY(currentTankPosition.x, currentTankPosition.y + i);
@@ -169,6 +175,7 @@ void TankRenderer::clearTankVertical()
 		goToXY(currentTankPosition.x, currentTankPosition.y - i);
 		std::cout << "   ";
 	}
+	Application::getInstance()->unlockCout();
 }
 
 

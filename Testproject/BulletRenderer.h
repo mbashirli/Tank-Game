@@ -5,6 +5,7 @@
 #include "TankRenderer.h"
 #include <thread>
 #include <mutex>
+#include "Application.h"
 struct BulletPosition {
 	int x, y, direction;
 	bool endRender;
@@ -26,9 +27,5 @@ private:
 	int bulletDirection;
 	BulletPosition currentBulletPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-
-	std::thread mThread;
-	std::condition_variable mCV;
-	std::mutex mMutex;
 };
 

@@ -31,7 +31,6 @@ int BulletRenderer::getTerminalDownCoordinate()
 
 void BulletRenderer::addBullet()
 {
-	//std::cout << "added bullet " << std::endl;
 	bulletDirection = tank->getTankDirection();
 	int currentTankPositionX = tank->getCurrentTankPosition().x;
 	int currentTankPositionY = tank->getCurrentTankPosition().y;
@@ -74,12 +73,10 @@ void BulletRenderer::renderBullets()
 	int downCoordinate = getTerminalDownCoordinate();
 	while (true)
 	{
-		std::mutex mtx;
-		mtx.lock();
 		for (auto it = bullets.begin(); it != bullets.end(); it++){
+			Application::getInstance()->lockCout();
 			if (it->direction == directionPoints::UP && !it->endRender)
 			{
-				//std::cout<<"UP";
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
 				goToXY(it->x, it->y--);
@@ -93,7 +90,6 @@ void BulletRenderer::renderBullets()
 			}
 			else if (it->direction == directionPoints::DOWN && !it->endRender)
 			{
-				//std::cout << "DOWN";
 				goToXY(it->x, it->y - 1);
 				std::cout << " ";
 				goToXY(it->x, it->y++);
@@ -107,7 +103,6 @@ void BulletRenderer::renderBullets()
 			}
 			else if (it->direction == directionPoints::RIGHT && !it->endRender)
 			{
-				//std::cout << "RIGHT";
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
 				goToXY(it->x++, it->y);
@@ -122,7 +117,6 @@ void BulletRenderer::renderBullets()
 			}
 			else if (it->direction == directionPoints::LEFT && !it->endRender)
 			{
-				//std::cout << "LEFT";
 				goToXY(it->x + 1, it->y);
 				std::cout << " ";
 				goToXY(it->x--, it->y);
@@ -134,12 +128,9 @@ void BulletRenderer::renderBullets()
 					it->endRender = true;
 				}
 			}
-			if (it != bullets.begin())
-			{
-			}
+			Application::getInstance()->unlockCout();
 	}
 		Sleep(30);
-		mtx.unlock();
 	}
 	bullets.clear();
 }
