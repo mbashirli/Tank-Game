@@ -25,33 +25,39 @@ void setConfigName(char** argv, char** envp);
 
 void tankGame()
 {
-	TankRenderer newTank;
-	BulletRenderer newBullet(&newTank);
+	enum players {PRIMARY, SECONDARY, NPC};
+	struct tankInformation {
+		int x, y;
+	};
+	std::vector <tankInformation> tanksInformation;
+
+	TankRenderer mainTank(players::PRIMARY);
+	TankRenderer newTank(players::NPC);
+
+	BulletRenderer newBullet(&mainTank);
+	BulletRenderer newBullet2(&newTank);
+
+	mainTank.renderTank();
 	newTank.renderTank();
-	
-	//std::thread Bullet(&BulletRenderer::renderBullets, newBullet);
-	//
 	while (true)
 	{
 		
 		bool isKeyPressed = _kbhit();
 		if (isKeyPressed)
 		{
+
 			int keyPressed = _getch();
 			if (keyPressed == KEY_SPACE)
 			{
 				newBullet.addBullet();
 	
 			}
-			newTank.moveTank();
+			mainTank.moveTank();
 		}
 		
 	}
-	//newBullet.join();
 }
 
-
-// ARRAYS !!
 
 struct Bullet {
 	int x, y;

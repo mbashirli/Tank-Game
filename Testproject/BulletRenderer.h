@@ -6,6 +6,9 @@
 #include <thread>
 #include <mutex>
 #include "Application.h"
+
+#define tankBlock 219
+
 struct BulletPosition {
 	int x, y, direction;
 	bool endRender;

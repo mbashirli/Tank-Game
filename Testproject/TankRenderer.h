@@ -19,7 +19,7 @@ struct tankPosition {
 class TankRenderer
 {
 public:
-	TankRenderer();
+	TankRenderer(int player);
 	~TankRenderer();
 	tankPosition getScreenBufferInfo();
 	tankPosition getCurrentTankPosition();
@@ -35,9 +35,10 @@ private:
 	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	enum directionPoints { UP, DOWN, LEFT, RIGHT };
-	std::mutex mtx;
+	enum players { PRIMARY, SECONDARY, NPC };
 	char tankBlock;
 	int tankDirection;
 	int bulletDirection;
+	int player;
 };
 

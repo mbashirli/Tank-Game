@@ -1,8 +1,9 @@
 #include "TankRenderer.h"
 
-TankRenderer::TankRenderer() {
+TankRenderer::TankRenderer(int player) {
+
+	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
-	tankDirection = directionPoints::UP;
 	bulletDirection = directionPoints::UP;
 	tankBlock = 219;
 }
@@ -12,9 +13,23 @@ tankPosition TankRenderer::getScreenBufferInfo()
 {
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
 	tankPosition coordinates;
-	coordinates.x = csbiInfo.dwSize.X / 2;
-	coordinates.y = (csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top) / 2;
-	return coordinates;
+	int terminalX = csbiInfo.dwSize.X;
+	int terminalY = csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top;
+	if (player == players::PRIMARY)
+	{
+		tankDirection = directionPoints::UP;
+		coordinates.x = terminalX / 2;
+		coordinates.y = terminalY / 2;
+		return coordinates;
+	}
+	else if (player == players::NPC)
+	{
+		srand(time(NULL));
+		tankDirection = rand() % 4;
+		coordinates.y = rand() % terminalY;
+		coordinates.x = rand() % terminalX;
+		return coordinates;
+	}
 }
 
 void TankRenderer::goToXY(short x, short y)
