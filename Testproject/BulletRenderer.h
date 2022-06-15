@@ -6,11 +6,12 @@
 #include <thread>
 #include <mutex>
 #include "Application.h"
+#include "Positions.h".
 
 #define tankBlock 219
 
 struct BulletPosition {
-	int x, y, direction;
+	int x, y, direction, index = -1;
 	bool endRender;
 };
 
@@ -21,6 +22,7 @@ public:
 	void goToXY(short x, short y);
 	void renderBullets();
 	void addBullet();
+	void checkBulletHit(std::vector<BulletPosition>::iterator it);
 	int getTerminalRightCoordinate();
 	int getTerminalDownCoordinate();
 private:

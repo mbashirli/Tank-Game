@@ -10,7 +10,7 @@ public:
 	void unlockCout();
 
 private:
-	Application();
+	Application() {};
 	static Application* instance;
 	std::mutex* coutMutex;
 };

@@ -43,7 +43,6 @@ void MenuRenderer::outCenteredText()
 
 void MenuRenderer::setMenuActiveColor(int menuColor)
 {
-
 	this->menuColor = menuColor;
 	isMenuColorChanged = true;
 }

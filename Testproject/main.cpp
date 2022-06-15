@@ -10,6 +10,7 @@
 #include "TankRenderer.h"
 #include "BulletRenderer.h"
 #include "Menu.h"
+#include "Positions.h"
 #include "MenuRenderer.h"
 
 #define KEY_SPACE 32
@@ -26,13 +27,14 @@ void setConfigName(char** argv, char** envp);
 void tankGame()
 {
 	enum players {PRIMARY, SECONDARY, NPC};
-	struct tankInformation {
+	struct positionInformation {
 		int x, y;
 	};
-	std::vector <tankInformation> tanksInformation;
+	std::vector <positionInformation> tanksInformation;
+	std::vector <positionInformation> bulletInformation;
 
-	TankRenderer mainTank(players::PRIMARY);
-	TankRenderer newTank(players::NPC);
+	TankRenderer mainTank(players::PRIMARY, 0);
+	TankRenderer newTank(players::NPC, 1);
 
 	BulletRenderer newBullet(&mainTank);
 	BulletRenderer newBullet2(&newTank);
@@ -50,9 +52,13 @@ void tankGame()
 			if (keyPressed == KEY_SPACE)
 			{
 				newBullet.addBullet();
-	
+
 			}
-			mainTank.moveTank();
+			else 
+			{
+				mainTank.moveTank();
+				newTank.moveTank();
+			}
 		}
 		
 	}

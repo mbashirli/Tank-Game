@@ -40,6 +40,7 @@ void BulletRenderer::addBullet()
 		currentBulletPosition.x = currentTankPositionX + 1;
 		currentBulletPosition.y = currentTankPositionY - 3;
 		currentBulletPosition.direction = bulletDirection;
+		currentBulletPosition.index++;
 		bullets.push_back(currentBulletPosition);
 	}
 	else if (bulletDirection == directionPoints::DOWN)
@@ -47,6 +48,7 @@ void BulletRenderer::addBullet()
 		currentBulletPosition.x = currentTankPositionX + 1;
 		currentBulletPosition.y = currentTankPositionY + 3;
 		currentBulletPosition.direction = bulletDirection;
+		currentBulletPosition.index++;
 		bullets.push_back(currentBulletPosition);
 	}
 	else if (bulletDirection == directionPoints::LEFT)
@@ -54,6 +56,7 @@ void BulletRenderer::addBullet()
 		currentBulletPosition.x = currentTankPositionX - 3;
 		currentBulletPosition.y = currentTankPositionY;
 		currentBulletPosition.direction = bulletDirection;
+		currentBulletPosition.index++;
 		bullets.push_back(currentBulletPosition);
 	}
 	else if (bulletDirection == directionPoints::RIGHT)
@@ -61,6 +64,7 @@ void BulletRenderer::addBullet()
 		currentBulletPosition.x = currentTankPositionX + 4;
 		currentBulletPosition.y = currentTankPositionY;
 		currentBulletPosition.direction = bulletDirection;
+		currentBulletPosition.index++;
 		bullets.push_back(currentBulletPosition);
 	}
 
@@ -73,7 +77,7 @@ void BulletRenderer::renderBullets()
 	int downCoordinate = getTerminalDownCoordinate();
 	while (true)
 	{
-		for (auto it = bullets.begin(); it != bullets.end(); it++){
+		for (auto it = bullets.begin(); it != bullets.end(); it++) {
 			Application::getInstance()->lockCout();
 			if (it->direction == directionPoints::UP && !it->endRender)
 			{
@@ -84,7 +88,7 @@ void BulletRenderer::renderBullets()
 				if (it->y == -1)
 				{
 					goToXY(it->x, 0);
-					std::cout << " "; 
+					std::cout << " ";
 					it->endRender = true;
 				}
 			}
@@ -129,8 +133,23 @@ void BulletRenderer::renderBullets()
 				}
 			}
 			Application::getInstance()->unlockCout();
+			checkBulletHit(it);
 	}
 		Sleep(30);
 	}
 	bullets.clear();
+}
+
+void BulletRenderer::checkBulletHit(std::vector<BulletPosition>::iterator it)
+{
+	for (int i = 0; i < Positions::getInstance()->getTankSize(); i = i + 1)
+	{
+		if (Positions::getInstance()->tankPosition(i)->x == it->x &&
+			Positions::getInstance()->tankPosition(i)->y == it->y)
+		{
+			goToXY(it->x - 1, it->y);
+			std::cout << " ";
+			it->endRender = true;
+		}
+	}
 }

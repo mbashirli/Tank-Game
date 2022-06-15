@@ -1,22 +1,64 @@
 #include "TankRenderer.h"
 
-TankRenderer::TankRenderer(int player) {
+TankRenderer::TankRenderer(int player, int index) {
 
 	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
+	currentTankPosition.index = index;
 	bulletDirection = directionPoints::UP;
 	tankBlock = 219;
+
+	if (player == players::PRIMARY)
+	{
+		this->tankColor = colors::GREEN;
+	}
+	else if (player == players::NPC)
+	{
+		this->tankColor = colors::BLUE;
+	}
+	setTankActiveColor();
 }
-TankRenderer::~TankRenderer() {}
+TankRenderer::~TankRenderer() {
+	deathAnimation();
+}
+
+void TankRenderer::deathAnimation()
+{
+	setTankInactiveColor();
+	renderTank();
+	Sleep(750);
+	setTankActiveColor();
+	renderTank();
+	Sleep(750);
+	setTankInactiveColor();
+	renderTank();
+	setTankActiveColor();
+	Sleep(750);
+	renderTank();
+}
+
+void TankRenderer::setTankActiveColor()
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, this->tankColor);
+}
+
+void TankRenderer::setTankInactiveColor()
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, colors::RED);
+}
+ 
 
 tankPosition TankRenderer::getScreenBufferInfo()
 {
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-	tankPosition coordinates;
+	tankPosition coordinates{};
 	int terminalX = csbiInfo.dwSize.X;
 	int terminalY = csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top;
 	if (player == players::PRIMARY)
 	{
+		tankColor = colors::GREEN;
 		tankDirection = directionPoints::UP;
 		coordinates.x = terminalX / 2;
 		coordinates.y = terminalY / 2;
@@ -24,6 +66,7 @@ tankPosition TankRenderer::getScreenBufferInfo()
 	}
 	else if (player == players::NPC)
 	{
+		tankColor = colors::BLUE;
 		srand(time(NULL));
 		tankDirection = rand() % 4;
 		coordinates.y = rand() % terminalY;
@@ -87,7 +130,9 @@ void TankRenderer::setTankPosition()
 		goToXY(currentTankPosition.x + 1, currentTankPosition.y + 1);
 		std::cout << tankBlock;
 	}
+	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y);
 }
+
 
 void TankRenderer::moveTank()
 {
@@ -154,7 +199,10 @@ void TankRenderer::moveTank()
 				renderTank();
 			}
 		}
+		
 	}
+	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y);
+
 }
 
 void TankRenderer::disableConsoleCursor()
