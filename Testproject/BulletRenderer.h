@@ -11,26 +11,31 @@
 #define tankBlock 219
 
 struct BulletPosition {
-	int x, y, direction, index = -1;
-	bool endRender;
+	int x, y, direction, index = 0;
+	bool endRender = false;
 };
 
 class BulletRenderer : public std::thread 
 {
 public:
 	BulletRenderer(TankRenderer* tank);
+	void checkBullet(std::vector<BulletPosition>::iterator it);
+	void checkBulletHit(std::vector<BulletPosition>::iterator it);
 	void goToXY(short x, short y);
+	void clearBullets();
 	void renderBullets();
 	void addBullet();
-	void checkBulletHit(std::vector<BulletPosition>::iterator it);
+	void checkTankStatus();
 	int getTerminalRightCoordinate();
 	int getTerminalDownCoordinate();
 private:
 	TankRenderer* tank;
-	std::vector <BulletPosition> bullets;
-	enum directionPoints { UP, DOWN, LEFT, RIGHT };
-	int bulletDirection;
 	BulletPosition currentBulletPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+	std::vector <BulletPosition> bullets;
+	enum directionPoints { UP, DOWN, LEFT, RIGHT };
+	int rightCoordinate;
+	int downCoordinate;
+	int bulletDirection;
 };
 

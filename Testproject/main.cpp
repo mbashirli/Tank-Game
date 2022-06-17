@@ -52,7 +52,7 @@ void tankGame()
 			if (keyPressed == KEY_SPACE)
 			{
 				newBullet.addBullet();
-
+				newTank.deathAnimation();
 			}
 			else 
 			{

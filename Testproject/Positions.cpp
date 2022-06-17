@@ -17,16 +17,16 @@ Positions* Positions::getInstance()
 	return instance;
 }
 
-void Positions::updateTankPosition(int index, int xCoord, int yCoord)
+void Positions::updateTankPosition(int index, int xCoord, int yCoord, int direction)
 {
 	if (tankPositions[index].x == 0 && tankPositions[index].y == 0)
 	{
-		tankPositions[index] = { xCoord, yCoord };
+		tankPositions[index] = { xCoord, yCoord, direction, true };
 		tankSize += 1;
 	}
 	else
 	{
-		tankPositions[index] = { xCoord, yCoord };
+		tankPositions[index] = { xCoord, yCoord, direction };
 	}
 }
 
@@ -38,4 +38,14 @@ Position* Positions::tankPosition(int index)
 int Positions::getTankSize()
 {
 	return tankSize;
+}
+
+void Positions::killTank(int index)
+{
+	tankPositions[index].isTankActive = false;
+}
+
+bool Positions::getTankStatus(int index)
+{
+	return tankPositions[index].isTankActive;
 }

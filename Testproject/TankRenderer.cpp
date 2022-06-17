@@ -5,7 +5,6 @@ TankRenderer::TankRenderer(int player, int index) {
 	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
 	currentTankPosition.index = index;
-	bulletDirection = directionPoints::UP;
 	tankBlock = 219;
 
 	if (player == players::PRIMARY)
@@ -26,15 +25,15 @@ void TankRenderer::deathAnimation()
 {
 	setTankInactiveColor();
 	renderTank();
-	Sleep(750);
+	Sleep(500);
 	setTankActiveColor();
 	renderTank();
-	Sleep(750);
+	Sleep(500);
 	setTankInactiveColor();
 	renderTank();
 	setTankActiveColor();
-	Sleep(750);
-	renderTank();
+	Sleep(500);
+	clearTankHorizontal();
 }
 
 void TankRenderer::setTankActiveColor()
@@ -73,6 +72,7 @@ tankPosition TankRenderer::getScreenBufferInfo()
 		coordinates.x = rand() % terminalX;
 		return coordinates;
 	}
+
 }
 
 void TankRenderer::goToXY(short x, short y)
@@ -93,6 +93,7 @@ void TankRenderer::renderTank()
 
 void TankRenderer::setTankPosition()
 {
+
 	if (tankDirection == directionPoints::UP)
 	{
 		goToXY(currentTankPosition.x, currentTankPosition.y - 1);
@@ -130,7 +131,7 @@ void TankRenderer::setTankPosition()
 		goToXY(currentTankPosition.x + 1, currentTankPosition.y + 1);
 		std::cout << tankBlock;
 	}
-	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y);
+	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y, tankDirection);
 }
 
 
@@ -201,7 +202,7 @@ void TankRenderer::moveTank()
 		}
 		
 	}
-	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y);
+	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y, tankDirection);
 
 }
 
