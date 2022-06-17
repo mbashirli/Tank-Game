@@ -3,6 +3,7 @@
 #include <iostream>
 #include <conio.h>
 #include <mutex>
+#include <thread>
 #include "Application.h"
 #include "Positions.h"
 
@@ -17,7 +18,7 @@ struct tankPosition {
 
 };
 
-class TankRenderer
+class TankRenderer : public std::thread
 {
 public:
 	TankRenderer(int player, int index);
@@ -29,6 +30,7 @@ public:
 	void setTankPosition();
 	void disableConsoleCursor();
 	void moveTank();
+	void disableTank();
 	void clearTankVertical();
 	void clearTankHorizontal();
 	void deathAnimation();
@@ -45,6 +47,7 @@ private:
 	int tankDirection;
 	int bulletDirection;
 	int player;
-	int tankColor;
+	int tankColor = colors::GREEN;
+	bool isTankActive = true;
 };
 

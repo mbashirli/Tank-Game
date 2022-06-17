@@ -24,8 +24,10 @@ public:
 	void goToXY(short x, short y);
 	void clearBullets();
 	void renderBullets();
+	void setBulletColor();
 	void addBullet();
-	void checkTankStatus();
+	void killTank(int index);
+	bool isTankActive();
 	int getTerminalRightCoordinate();
 	int getTerminalDownCoordinate();
 private:
@@ -34,8 +36,10 @@ private:
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	std::vector <BulletPosition> bullets;
 	enum directionPoints { UP, DOWN, LEFT, RIGHT };
+	enum colors { GREEN = 2, RED = 4, BLUE = 1, WHITE = 8 };
 	int rightCoordinate;
 	int downCoordinate;
 	int bulletDirection;
+	int bulletColor = colors::RED;
 };
 

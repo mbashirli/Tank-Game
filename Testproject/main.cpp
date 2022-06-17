@@ -52,12 +52,16 @@ void tankGame()
 			if (keyPressed == KEY_SPACE)
 			{
 				newBullet.addBullet();
-				newTank.deathAnimation();
 			}
 			else 
 			{
 				mainTank.moveTank();
 				newTank.moveTank();
+			}
+
+			if (!newBullet.isTankActive())
+			{
+				newTank.disableTank();
 			}
 		}
 		

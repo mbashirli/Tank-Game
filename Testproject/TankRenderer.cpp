@@ -1,45 +1,53 @@
 #include "TankRenderer.h"
 
-TankRenderer::TankRenderer(int player, int index) {
+TankRenderer::TankRenderer(int player, int index) : std::thread(&TankRenderer::deathAnimation, this) {
 
+	if (player == players::NPC)
+	{
+		tankColor = colors::BLUE;
+	}
+	isTankActive = true;
 	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
 	currentTankPosition.index = index;
 	tankBlock = 219;
-
-	if (player == players::PRIMARY)
-	{
-		this->tankColor = colors::GREEN;
-	}
-	else if (player == players::NPC)
-	{
-		this->tankColor = colors::BLUE;
-	}
 	setTankActiveColor();
 }
-TankRenderer::~TankRenderer() {
-	deathAnimation();
+
+TankRenderer::~TankRenderer() {}
+
+void TankRenderer::disableTank()
+{
+	isTankActive = false;
 }
+
+
 
 void TankRenderer::deathAnimation()
 {
-	setTankInactiveColor();
-	renderTank();
-	Sleep(500);
-	setTankActiveColor();
-	renderTank();
-	Sleep(500);
-	setTankInactiveColor();
-	renderTank();
-	setTankActiveColor();
-	Sleep(500);
-	clearTankHorizontal();
+	while (true)
+	{
+		if (isTankActive == false)
+		{
+			setTankInactiveColor();
+			renderTank();
+			Sleep(1500);
+			setTankActiveColor();
+			renderTank();
+			Sleep(1500);
+			setTankInactiveColor();
+			renderTank();
+			setTankActiveColor();
+			Sleep(500);
+			clearTankHorizontal();
+		}
+	}
 }
 
 void TankRenderer::setTankActiveColor()
 {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, this->tankColor);
+	SetConsoleTextAttribute(hConsole, tankColor);
 }
 
 void TankRenderer::setTankInactiveColor()
@@ -47,7 +55,7 @@ void TankRenderer::setTankInactiveColor()
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, colors::RED);
 }
- 
+
 
 tankPosition TankRenderer::getScreenBufferInfo()
 {
@@ -83,11 +91,14 @@ void TankRenderer::goToXY(short x, short y)
 
 void TankRenderer::renderTank()
 {
-	Application::getInstance()->lockCout();
-	setTankPosition();
-	Sleep(30);
-	Application::getInstance()->unlockCout();
-	disableConsoleCursor();
+	if (isTankActive)
+	{
+		Application::getInstance()->lockCout();
+		setTankPosition();
+		Sleep(30);
+		Application::getInstance()->unlockCout();
+		disableConsoleCursor();
+	}
 }
 
 
@@ -137,7 +148,7 @@ void TankRenderer::setTankPosition()
 
 void TankRenderer::moveTank()
 {
-	if (_kbhit())
+	if (_kbhit() && isTankActive)
 	{
 		int keyPressed = _getch();
 		if (keyPressed == KEY_UP)
@@ -200,7 +211,7 @@ void TankRenderer::moveTank()
 				renderTank();
 			}
 		}
-		
+
 	}
 	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y, tankDirection);
 

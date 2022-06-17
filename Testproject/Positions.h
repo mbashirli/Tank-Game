@@ -3,7 +3,7 @@
 
 struct Position {
 	int x, y, direction;
-	bool isTankActive;
+	bool isTankActive = true;
 };
 
 class Positions
