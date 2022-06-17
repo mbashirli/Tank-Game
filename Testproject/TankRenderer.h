@@ -1,0 +1,50 @@
+#pragma once
+#include <windows.h>
+#include <iostream>
+#include <conio.h>
+#include <mutex>
+#include "Application.h"
+#include "Positions.h"
+
+#define KEY_UP 72
+#define KEY_DOWN 80
+#define KEY_RIGHT 77
+#define KEY_LEFT 75
+#define KEY_SPACE 32
+
+struct tankPosition {
+	int x, y, index;
+
+};
+
+class TankRenderer
+{
+public:
+	TankRenderer(int player, int index);
+	~TankRenderer();
+	tankPosition getScreenBufferInfo();
+	tankPosition getCurrentTankPosition();
+	void goToXY(short x, short y);
+	void renderTank();
+	void setTankPosition();
+	void disableConsoleCursor();
+	void moveTank();
+	void clearTankVertical();
+	void clearTankHorizontal();
+	void deathAnimation();
+	void setTankActiveColor();
+	void setTankInactiveColor();
+	int getTankDirection();
+private:
+	tankPosition currentTankPosition;
+	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+	enum directionPoints { UP, DOWN, LEFT, RIGHT };
+	enum players { PRIMARY, SECONDARY, NPC };
+	enum colors {GREEN = 2, RED = 4, BLUE = 1};
+	char tankBlock;
+	int tankDirection;
+	int bulletDirection;
+	int player;
+	int tankColor;
+};
+
