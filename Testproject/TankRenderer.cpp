@@ -11,6 +11,7 @@ TankRenderer::TankRenderer(int player, int index) : std::thread(&TankRenderer::d
 	currentTankPosition = getScreenBufferInfo();
 	currentTankPosition.index = index;
 	tankBlock = 219;
+	threadLoop = true;
 	setTankActiveColor();
 }
 
@@ -25,21 +26,23 @@ void TankRenderer::disableTank()
 
 void TankRenderer::deathAnimation()
 {
-	while (true)
+	while (threadLoop)
 	{
 		if (isTankActive == false)
 		{
 			setTankInactiveColor();
 			renderTank();
-			Sleep(1500);
+			Sleep(300);
 			setTankActiveColor();
 			renderTank();
-			Sleep(1500);
+			/*Sleep(500);
 			setTankInactiveColor();
 			renderTank();
 			setTankActiveColor();
 			Sleep(500);
+			renderTank();*/
 			clearTankHorizontal();
+			threadLoop = false;
 		}
 	}
 }

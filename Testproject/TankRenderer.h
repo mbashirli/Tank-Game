@@ -47,7 +47,8 @@ private:
 	int tankDirection;
 	int bulletDirection;
 	int player;
-	int tankColor = colors::GREEN;
-	bool isTankActive = true;
+	int tankColor;
+	bool isTankActive;
+	bool threadLoop;
 };
 

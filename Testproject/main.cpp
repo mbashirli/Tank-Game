@@ -58,13 +58,11 @@ void tankGame()
 				mainTank.moveTank();
 				newTank.moveTank();
 			}
-
-			if (!newBullet.isTankActive())
-			{
-				newTank.disableTank();
-			}
 		}
-		
+		if (!newBullet.isTankActive())
+		{
+			newTank.disableTank();
+		}
 	}
 }
 
