@@ -2,8 +2,6 @@
 #include <windows.h>
 #include <iostream>
 #include <conio.h>
-#include <mutex>
-#include <thread>
 #include "Application.h"
 #include "Positions.h"
 
@@ -36,6 +34,7 @@ public:
 	void deathAnimation();
 	void setTankActiveColor();
 	void setTankInactiveColor();
+	bool tankOnPathTest();
 	int getTankDirection();
 	bool isTankDisabled();
 private:

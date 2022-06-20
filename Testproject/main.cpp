@@ -26,7 +26,7 @@ void setConfigName(char** argv, char** envp);
 
 void tankGame()
 {
-	enum players {PRIMARY, SECONDARY, NPC};
+	enum players { PRIMARY, SECONDARY, NPC };
 	struct positionInformation {
 		int x, y;
 	};
@@ -35,14 +35,18 @@ void tankGame()
 	std::vector <positionInformation> bulletInformation;
 
 
-	TankRenderer Tanks[] = { TankRenderer(players::PRIMARY, 0), TankRenderer(players::NPC, 1), TankRenderer(players::NPC, 2)};
+	TankRenderer Tanks[] = { TankRenderer(players::PRIMARY, 0), TankRenderer(players::NPC, 1), TankRenderer(players::NPC, 2) };
 
 	BulletRenderer newBullet(&Tanks[0]);
 	Tanks[0].renderTank();
 	Tanks[1].renderTank();
 	Tanks[2].renderTank();
 
-	std::thread t1(&TankRenderer::deathAnimation, &Tanks[1]);
+	std::thread animateDeath(&TankRenderer::deathAnimation, &Tanks[1]);
+	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
+	animateBullets.detach();
+	animateDeath.detach();
+	
 	while (true)
 	{
 		bool isKeyPressed = _kbhit();
@@ -56,10 +60,9 @@ void tankGame()
 			}
 			else if (keyPressed == KEY_ESCAPE)
 			{
-				t1.join();
-				return;
+				break;
 			}
-			else 
+			else
 			{
 				Tanks[0].moveTank();
 				Tanks[1].moveTank();
@@ -73,11 +76,10 @@ void tankGame()
 				Tanks[inactiveTank].disableTank();
 		}
 	}
-	t1.join();
+	
 	return;
 }
 
-// escape
 // menu borders
 // tank advancement into another tank
 
@@ -170,6 +172,9 @@ void newGameMenu()
 					{
 						renderer.clearTerminal();
 						tankGame();
+						system("CLS");
+						return;
+
 					}
 					if (renderer.getActiveTitleID() == 4)
 						return;

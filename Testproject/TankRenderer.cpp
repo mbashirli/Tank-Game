@@ -40,7 +40,6 @@ void TankRenderer::deathAnimation()
 	{
 		if (!isTankActive)
 		{
-			Sleep(100);
 			clearTankHorizontal();
 			setTankInactiveColor();
 			renderTank();
@@ -54,7 +53,6 @@ void TankRenderer::deathAnimation()
 			clearTankHorizontal();
 			threadLoop = false;
 		}
-	
 	}
 }
 
@@ -275,3 +273,12 @@ tankPosition TankRenderer::getCurrentTankPosition()
 {
 	return currentTankPosition;
 }
+
+bool TankRenderer::tankOnPathTest()
+{
+	for (int i = 0; i < 3; i = i + 1)
+	{
+
+	}
+}
+

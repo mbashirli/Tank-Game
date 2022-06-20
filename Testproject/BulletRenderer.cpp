@@ -1,6 +1,6 @@
 #include "BulletRenderer.h"
 
-BulletRenderer::BulletRenderer(TankRenderer* tank) : std::thread(&BulletRenderer::renderBullets, this)
+BulletRenderer::BulletRenderer(TankRenderer* tank)
 {
 	bulletDirection = directionPoints::UP;
 	currentBulletPosition.x = 0;
@@ -8,6 +8,8 @@ BulletRenderer::BulletRenderer(TankRenderer* tank) : std::thread(&BulletRenderer
 	this->tank = tank;
 	rightCoordinate = getTerminalRightCoordinate();
 	downCoordinate = getTerminalDownCoordinate();
+	threadLoop = true;
+	bulletColor = colors::RED;
 }
 
 
@@ -82,11 +84,11 @@ void BulletRenderer::addBullet()
 
 void BulletRenderer::renderBullets()
 {
-	while (true)
+	while (threadLoop)
 	{
 		for (auto it = bullets.begin(); it != bullets.end(); it++) {
 			Application::getInstance()->lockCout();
-			//setBulletColor();
+			setBulletColor();
 			if (it->direction == directionPoints::UP && !it->endRender)
 			{
 				goToXY(it->x, it->y + 1);
@@ -146,7 +148,8 @@ void BulletRenderer::renderBullets()
 		Sleep(30);
 		clearBullets();
 	}
-	bullets.clear();
+
+	return;
 }
 
 
@@ -282,7 +285,7 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				std::cout << " ";
 				goToXY(it->x + 1, it->y);
 				std::cout << " ";
-				goToXY(it->x, it->y-1);
+				goToXY(it->x, it->y - 1);
 				std::cout << " ";
 				it->endRender = true;
 				killTank(i);
@@ -370,10 +373,10 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->tankPosition(i)->x+1 == it->x &&
+			else if (Positions::getInstance()->tankPosition(i)->x + 1 == it->x &&
 				Positions::getInstance()->tankPosition(i)->y == it->y)
 			{
-				goToXY(it->x, it->y-1);
+				goToXY(it->x, it->y - 1);
 				std::cout << " ";
 				it->endRender = true;
 				killTank(i);
@@ -398,4 +401,9 @@ int BulletRenderer::isTankActive()
 void BulletRenderer::killTank(int index)
 {
 	Positions::getInstance()->killTank(index);
+}
+
+void BulletRenderer::killThread()
+{
+	threadLoop = false;
 }
