@@ -15,7 +15,7 @@
 
 #define KEY_SPACE 32
 #define KEY_ENTER 13
-
+#define KEY_ESCAPE 27
 
 void mainMenu();
 void newGameMenu();;
@@ -30,20 +30,21 @@ void tankGame()
 	struct positionInformation {
 		int x, y;
 	};
+	int inactiveTank;
 	std::vector <positionInformation> tanksInformation;
 	std::vector <positionInformation> bulletInformation;
 
-	TankRenderer mainTank(players::PRIMARY, 0);
-	TankRenderer newTank(players::NPC, 1);
 
-	BulletRenderer newBullet(&mainTank);
-	BulletRenderer newBullet2(&newTank);
+	TankRenderer Tanks[] = { TankRenderer(players::PRIMARY, 0), TankRenderer(players::NPC, 1), TankRenderer(players::NPC, 2)};
 
-	mainTank.renderTank();
-	newTank.renderTank();
+	BulletRenderer newBullet(&Tanks[0]);
+	Tanks[0].renderTank();
+	Tanks[1].renderTank();
+	Tanks[2].renderTank();
+
+	std::thread t1(&TankRenderer::deathAnimation, &Tanks[1]);
 	while (true)
 	{
-		
 		bool isKeyPressed = _kbhit();
 		if (isKeyPressed)
 		{
@@ -53,19 +54,32 @@ void tankGame()
 			{
 				newBullet.addBullet();
 			}
+			else if (keyPressed == KEY_ESCAPE)
+			{
+				t1.join();
+				return;
+			}
 			else 
 			{
-				mainTank.moveTank();
-				newTank.moveTank();
+				Tanks[0].moveTank();
+				Tanks[1].moveTank();
+				//Tanks[2].moveTank();
 			}
 		}
-		if (!newBullet.isTankActive())
+		if (newBullet.isTankActive() != -1)
 		{
-			newTank.disableTank();
+			inactiveTank = newBullet.isTankActive();
+			if (Tanks[inactiveTank].isTankDisabled())
+				Tanks[inactiveTank].disableTank();
 		}
 	}
+	t1.join();
+	return;
 }
 
+// escape
+// menu borders
+// tank advancement into another tank
 
 struct Bullet {
 	int x, y;

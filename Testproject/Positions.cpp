@@ -4,6 +4,7 @@
 Positions::Positions(){
 	tankPositions.push_back({});
 	tankPositions.push_back({});
+	tankPositions.push_back({});
 	tankSize = 0;
 }
 Positions* Positions::instance;

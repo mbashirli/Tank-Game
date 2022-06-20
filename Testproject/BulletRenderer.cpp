@@ -383,16 +383,16 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 }
 
 
-bool BulletRenderer::isTankActive()
+int BulletRenderer::isTankActive()
 {
 	for (int i = 0; i < Positions::getInstance()->getTankSize(); i = i + 1)
 	{
 		if (Positions::getInstance()->getTankStatus(i) == false)
 		{
-			return false;
+			return i;
 		}
 	}
-	return true;
+	return -1;
 }
 
 void BulletRenderer::killTank(int index)

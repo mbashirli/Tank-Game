@@ -18,7 +18,7 @@ struct tankPosition {
 
 };
 
-class TankRenderer : public std::thread
+class TankRenderer
 {
 public:
 	TankRenderer(int player, int index);
@@ -37,6 +37,7 @@ public:
 	void setTankActiveColor();
 	void setTankInactiveColor();
 	int getTankDirection();
+	bool isTankDisabled();
 private:
 	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;

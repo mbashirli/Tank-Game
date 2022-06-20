@@ -1,10 +1,15 @@
 #include "TankRenderer.h"
 
-TankRenderer::TankRenderer(int player, int index) : std::thread(&TankRenderer::deathAnimation, this) {
 
+TankRenderer::TankRenderer(int player, int index)
+{
 	if (player == players::NPC)
 	{
 		tankColor = colors::BLUE;
+	}
+	else if (player == players::PRIMARY)
+	{
+		tankColor = colors::GREEN;
 	}
 	isTankActive = true;
 	this->player = player;
@@ -15,35 +20,41 @@ TankRenderer::TankRenderer(int player, int index) : std::thread(&TankRenderer::d
 	setTankActiveColor();
 }
 
-TankRenderer::~TankRenderer() {}
+TankRenderer::~TankRenderer() {
+}
+
 
 void TankRenderer::disableTank()
 {
 	isTankActive = false;
 }
 
-
+bool TankRenderer::isTankDisabled()
+{
+	return isTankActive;
+}
 
 void TankRenderer::deathAnimation()
 {
 	while (threadLoop)
 	{
-		if (isTankActive == false)
+		if (!isTankActive)
 		{
+			Sleep(100);
+			clearTankHorizontal();
 			setTankInactiveColor();
 			renderTank();
-			Sleep(300);
+			Sleep(100);
 			setTankActiveColor();
 			renderTank();
-			/*Sleep(500);
+			Sleep(100);
 			setTankInactiveColor();
 			renderTank();
-			setTankActiveColor();
-			Sleep(500);
-			renderTank();*/
+			Sleep(100);
 			clearTankHorizontal();
 			threadLoop = false;
 		}
+	
 	}
 }
 
@@ -79,11 +90,10 @@ tankPosition TankRenderer::getScreenBufferInfo()
 		tankColor = colors::BLUE;
 		srand(time(NULL));
 		tankDirection = rand() % 4;
-		coordinates.y = rand() % terminalY;
-		coordinates.x = rand() % terminalX;
+		coordinates.y = rand() % (terminalY - 5);
+		coordinates.x = rand() % (terminalX - 5);
 		return coordinates;
 	}
-
 }
 
 void TankRenderer::goToXY(short x, short y)
@@ -95,15 +105,14 @@ void TankRenderer::goToXY(short x, short y)
 void TankRenderer::renderTank()
 {
 	if (isTankActive)
-	{
-		Application::getInstance()->lockCout();
-		setTankPosition();
-		Sleep(30);
-		Application::getInstance()->unlockCout();
-		disableConsoleCursor();
-	}
-}
+		setTankActiveColor();
+	Application::getInstance()->lockCout();
+	setTankPosition();
+	Sleep(30);
+	Application::getInstance()->unlockCout();
+	disableConsoleCursor();
 
+}
 
 void TankRenderer::setTankPosition()
 {

@@ -27,7 +27,7 @@ public:
 	void setBulletColor();
 	void addBullet();
 	void killTank(int index);
-	bool isTankActive();
+	int isTankActive();
 	int getTerminalRightCoordinate();
 	int getTerminalDownCoordinate();
 private:
