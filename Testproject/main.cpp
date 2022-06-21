@@ -65,8 +65,6 @@ void tankGame()
 			else
 			{
 				Tanks[0].moveTank();
-				Tanks[1].moveTank();
-				//Tanks[2].moveTank();
 			}
 		}
 		if (newBullet.isTankActive() != -1)

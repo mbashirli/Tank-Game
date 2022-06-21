@@ -13,7 +13,6 @@
 
 struct tankPosition {
 	int x, y, index;
-
 };
 
 class TankRenderer
@@ -31,10 +30,14 @@ public:
 	void disableTank();
 	void clearTankVertical();
 	void clearTankHorizontal();
+	void clearTankUp();
+	void clearTankDown();
+	void clearTankRight();
+	void clearTankLeft();
 	void deathAnimation();
 	void setTankActiveColor();
 	void setTankInactiveColor();
-	bool tankOnPathTest();
+	bool onPath();
 	int getTankDirection();
 	bool isTankDisabled();
 private:
@@ -48,6 +51,7 @@ private:
 	int bulletDirection;
 	int player;
 	int tankColor;
+	int terminalX, terminalY;
 	bool isTankActive;
 	bool threadLoop;
 };

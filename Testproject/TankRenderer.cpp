@@ -73,8 +73,8 @@ tankPosition TankRenderer::getScreenBufferInfo()
 {
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
 	tankPosition coordinates{};
-	int terminalX = csbiInfo.dwSize.X;
-	int terminalY = csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top;
+	terminalX = csbiInfo.dwSize.X;
+	terminalY = csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top;
 	if (player == players::PRIMARY)
 	{
 		tankColor = colors::GREEN;
@@ -163,37 +163,38 @@ void TankRenderer::moveTank()
 		int keyPressed = _getch();
 		if (keyPressed == KEY_UP)
 		{
-			if (tankDirection == directionPoints::UP)
+			if (tankDirection == directionPoints::UP && onPath())
 			{
-				clearTankVertical();
+				clearTankUp();
 				currentTankPosition.y--;
 				renderTank();
 			}
 			else
 			{
 				tankDirection = directionPoints::UP;
-				clearTankVertical();
+				clearTankUp();
 				renderTank();
 			}
 		}
 		else if (keyPressed == KEY_DOWN)
 		{
-			if (tankDirection == directionPoints::DOWN)
+			if (tankDirection == directionPoints::DOWN && onPath())
 			{
-				clearTankVertical();
+
+				clearTankDown();
 				currentTankPosition.y++;
 				renderTank();
 			}
 			else
 			{
-				clearTankVertical();
+				clearTankDown();
 				tankDirection = directionPoints::DOWN;
 				renderTank();
 			}
 		}
 		else if (keyPressed == KEY_LEFT)
 		{
-			if (tankDirection == directionPoints::LEFT)
+			if (tankDirection == directionPoints::LEFT && onPath())
 			{
 				currentTankPosition.x--;
 				clearTankHorizontal();
@@ -208,7 +209,7 @@ void TankRenderer::moveTank()
 		}
 		else if (keyPressed == KEY_RIGHT)
 		{
-			if (tankDirection == directionPoints::RIGHT)
+			if (tankDirection == directionPoints::RIGHT && onPath())
 			{
 				clearTankHorizontal();
 				currentTankPosition.x++;
@@ -220,8 +221,8 @@ void TankRenderer::moveTank()
 				tankDirection = directionPoints::RIGHT;
 				renderTank();
 			}
-		}
 
+		}
 	}
 	Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y, tankDirection);
 
@@ -244,8 +245,7 @@ void TankRenderer::clearTankHorizontal()
 	for (int i = -1; i < 4; i = i + 1)
 	{
 		goToXY(currentTankPosition.x - 1, currentTankPosition.y + i);
-		std::cout << "   ";
-		std::cout << "   ";
+		std::cout << "    ";
 	}
 	Application::getInstance()->unlockCout();
 }
@@ -263,6 +263,25 @@ void TankRenderer::clearTankVertical()
 	Application::getInstance()->unlockCout();
 }
 
+void TankRenderer::clearTankUp()
+{
+	Application::getInstance()->lockCout();
+	goToXY(currentTankPosition.x, currentTankPosition.y);
+	std::cout << "   ";
+	goToXY(currentTankPosition.x, currentTankPosition.y-1);
+	std::cout << " ";
+	Application::getInstance()->unlockCout();
+}
+
+void TankRenderer::clearTankDown()
+{
+	Application::getInstance()->lockCout();
+	goToXY(currentTankPosition.x, currentTankPosition.y + 1);
+	std::cout << " ";
+	goToXY(currentTankPosition.x, currentTankPosition.y);
+	std::cout << "   ";
+	Application::getInstance()->unlockCout();
+}
 
 int TankRenderer::getTankDirection()
 {
@@ -274,11 +293,47 @@ tankPosition TankRenderer::getCurrentTankPosition()
 	return currentTankPosition;
 }
 
-bool TankRenderer::tankOnPathTest()
+bool TankRenderer::onPath()
 {
-	for (int i = 0; i < 3; i = i + 1)
+	for (int i = 0; i < Positions::getInstance()->getTankSize(); i = i + 1)
 	{
+		if (i == currentTankPosition.index)
+			continue;
+		if (tankDirection == directionPoints::UP)
+		{
+			if (Positions::getInstance()->tankPosition(i)->direction == directionPoints::UP)
+			{
+				if (currentTankPosition.x + 1 == Positions::getInstance()->tankPosition(i)->x)
+					return true;
+			}
+			if (Positions::getInstance()->tankPosition(i)->direction == directionPoints::DOWN)
+			{
 
+			}
+			if (Positions::getInstance()->tankPosition(i)->direction == directionPoints::RIGHT)
+			{
+
+			}
+			if (Positions::getInstance()->tankPosition(i)->direction == directionPoints::LEFT)
+			{
+
+			}
+		}
+		else if (tankDirection == directionPoints::DOWN)
+		{
+
+		}
+		else if (tankDirection == directionPoints::RIGHT)
+		{
+
+		}
+		else if (tankDirection == directionPoints::LEFT)
+		{
+
+		}
 	}
 }
+
+
+
 
