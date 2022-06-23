@@ -28,16 +28,16 @@ public:
 	void disableConsoleCursor();
 	void moveTank();
 	void disableTank();
-	void clearTankVertical();
-	void clearTankHorizontal();
+	void clearTank();
 	void clearTankUp();
 	void clearTankDown();
 	void clearTankRight();
 	void clearTankLeft();
+	void clearTankLeftModified();
 	void deathAnimation();
 	void setTankActiveColor();
 	void setTankInactiveColor();
-	bool onPath();
+	bool tankOnPath();
 	int getTankDirection();
 	bool isTankDisabled();
 private:
