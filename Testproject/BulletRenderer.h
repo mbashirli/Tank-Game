@@ -3,8 +3,6 @@
 #include <conio.h>
 #include <vector>
 #include "TankRenderer.h"
-#include <thread>
-#include <mutex>
 #include "Application.h"
 #include "Positions.h".
 
@@ -15,7 +13,7 @@ struct BulletPosition {
 	bool endRender = false;
 };
 
-class BulletRenderer : public std::thread 
+class BulletRenderer
 {
 public:
 	BulletRenderer(TankRenderer* tank);
@@ -27,7 +25,8 @@ public:
 	void setBulletColor();
 	void addBullet();
 	void killTank(int index);
-	bool isTankActive();
+	void killThread();
+	int isTankActive();
 	int getTerminalRightCoordinate();
 	int getTerminalDownCoordinate();
 private:
@@ -40,6 +39,7 @@ private:
 	int rightCoordinate;
 	int downCoordinate;
 	int bulletDirection;
-	int bulletColor = colors::RED;
+	int bulletColor;
+	bool threadLoop;
 };
 

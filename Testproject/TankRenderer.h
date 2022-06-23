@@ -2,8 +2,6 @@
 #include <windows.h>
 #include <iostream>
 #include <conio.h>
-#include <mutex>
-#include <thread>
 #include "Application.h"
 #include "Positions.h"
 
@@ -15,10 +13,9 @@
 
 struct tankPosition {
 	int x, y, index;
-
 };
 
-class TankRenderer : public std::thread
+class TankRenderer
 {
 public:
 	TankRenderer(int player, int index);
@@ -31,12 +28,18 @@ public:
 	void disableConsoleCursor();
 	void moveTank();
 	void disableTank();
-	void clearTankVertical();
-	void clearTankHorizontal();
+	void clearTank();
+	void clearTankUp();
+	void clearTankDown();
+	void clearTankRight();
+	void clearTankLeft();
+	void clearTankLeftModified();
 	void deathAnimation();
 	void setTankActiveColor();
 	void setTankInactiveColor();
+	bool tankOnPath();
 	int getTankDirection();
+	bool isTankDisabled();
 private:
 	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
@@ -47,7 +50,9 @@ private:
 	int tankDirection;
 	int bulletDirection;
 	int player;
-	int tankColor = colors::GREEN;
-	bool isTankActive = true;
+	int tankColor;
+	int terminalX, terminalY;
+	bool isTankActive;
+	bool threadLoop;
 };
 
