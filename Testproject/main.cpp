@@ -12,6 +12,7 @@
 #include "Menu.h"
 #include "Positions.h"
 #include "MenuRenderer.h"
+#include "GameMap.h"
 
 #define KEY_SPACE 32
 #define KEY_ENTER 13
@@ -26,6 +27,7 @@ void setConfigName(char** argv, char** envp);
 
 void tankGame()
 {
+
 	enum players { PRIMARY, SECONDARY, NPC };
 	struct positionInformation {
 		int x, y;
@@ -47,6 +49,7 @@ void tankGame()
 	animateBullets.detach();
 	animateDeath.detach();
 	
+	GameMap::getInstance()->renderMap();
 	while (true)
 	{
 		bool isKeyPressed = _kbhit();

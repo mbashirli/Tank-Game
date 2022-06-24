@@ -5,6 +5,7 @@
 #include "TankRenderer.h"
 #include "Application.h"
 #include "Positions.h".
+#include "GameMap.h"
 
 #define tankBlock 219
 
@@ -27,8 +28,6 @@ public:
 	void killTank(int index);
 	void killThread();
 	int isTankActive();
-	int getTerminalRightCoordinate();
-	int getTerminalDownCoordinate();
 private:
 	TankRenderer* tank;
 	BulletPosition currentBulletPosition;

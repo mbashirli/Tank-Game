@@ -6,8 +6,8 @@ BulletRenderer::BulletRenderer(TankRenderer* tank)
 	currentBulletPosition.x = 0;
 	currentBulletPosition.y = 0;
 	this->tank = tank;
-	rightCoordinate = getTerminalRightCoordinate();
-	downCoordinate = getTerminalDownCoordinate();
+	rightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
+	downCoordinate = GameMap::getInstance()->getMapDownCoordinate();
 	threadLoop = true;
 	bulletColor = colors::RED;
 }
@@ -26,19 +26,6 @@ void BulletRenderer::goToXY(short x, short y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), p);
 }
 
-int  BulletRenderer::getTerminalRightCoordinate()
-{
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-	int eastCoordinate = csbiInfo.dwSize.X;
-	return eastCoordinate;
-}
-
-int BulletRenderer::getTerminalDownCoordinate()
-{
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
-	int southCoordinate = csbiInfo.srWindow.Bottom;
-	return southCoordinate + 1;
-}
 
 void BulletRenderer::addBullet()
 {
@@ -95,9 +82,9 @@ void BulletRenderer::renderBullets()
 				std::cout << " ";
 				goToXY(it->x, it->y--);
 				std::cout << "*";
-				if (it->y == -1)
+				if (it->y == 0)
 				{
-					goToXY(it->x, 0);
+					goToXY(it->x, 1);
 					std::cout << " ";
 					it->endRender = true;
 				}
@@ -135,9 +122,9 @@ void BulletRenderer::renderBullets()
 				std::cout << " ";
 				goToXY(it->x--, it->y);
 				std::cout << "*";
-				if (it->x == -1)
+				if (it->x == 1)
 				{
-					goToXY(0, it->y);
+					goToXY(2, it->y);
 					std::cout << " ";
 					it->endRender = true;
 				}
@@ -178,6 +165,10 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 {
 	for (int i = 0; i < Positions::getInstance()->getTankSize(); i = i + 1)
 	{
+		if (Positions::getInstance()->getTankStatus(i) == false) {
+			it->endRender = false;
+			continue;
+		}
 		if (Positions::getInstance()->tankPosition(i)->direction == directionPoints::LEFT)
 		{
 
