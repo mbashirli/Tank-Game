@@ -3,6 +3,7 @@
 #include <iostream>
 #include <conio.h>
 #include "Application.h"
+#include "GameMap.h"
 #include "Positions.h"
 
 #define KEY_UP 72
@@ -38,6 +39,7 @@ public:
 	void setTankActiveColor();
 	void setTankInactiveColor();
 	bool tankOnPath();
+	bool borderOnPath();
 	int getTankDirection();
 	bool isTankDisabled();
 private:
@@ -51,7 +53,7 @@ private:
 	int bulletDirection;
 	int player;
 	int tankColor;
-	int terminalX, terminalY;
+	int mapRightCoordinate, mapDownCoordinate;
 	bool isTankActive;
 	bool threadLoop;
 };

@@ -15,6 +15,8 @@ TankRenderer::TankRenderer(int player, int index)
 	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
 	currentTankPosition.index = index;
+	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
+	mapDownCoordinate = GameMap::getInstance()->getMapDownCoordinate();
 	tankBlock = 219;
 	threadLoop = true;
 	setTankActiveColor();
@@ -50,6 +52,9 @@ void TankRenderer::deathAnimation()
 			renderTank();
 			Sleep(100);
 			clearTank();
+			currentTankPosition.x = 0;
+			currentTankPosition.y = 0;
+			Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y, directionPoints::UP);
 			threadLoop = false;
 		}
 	}
@@ -70,16 +75,15 @@ void TankRenderer::setTankInactiveColor()
 
 tankPosition TankRenderer::getScreenBufferInfo()
 {
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbiInfo);
+	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
+	mapDownCoordinate = GameMap::getInstance()->getMapDownCoordinate();
 	tankPosition coordinates{};
-	terminalX = csbiInfo.dwSize.X;
-	terminalY = csbiInfo.srWindow.Bottom - csbiInfo.srWindow.Top;
 	if (player == players::PRIMARY)
 	{
 		tankColor = colors::GREEN;
 		tankDirection = directionPoints::UP;
-		coordinates.x = terminalX / 2;
-		coordinates.y = terminalY / 2;
+		coordinates.x = mapRightCoordinate / 2;
+		coordinates.y = mapDownCoordinate / 2;
 		return coordinates;
 	}
 	else if (player == players::NPC)
@@ -87,8 +91,8 @@ tankPosition TankRenderer::getScreenBufferInfo()
 		tankColor = colors::BLUE;
 		srand(time(NULL));
 		tankDirection = rand() % 4;
-		coordinates.y = rand() % (terminalY - 5);
-		coordinates.x = rand() % (terminalX - 5);
+		coordinates.y = rand() % (mapDownCoordinate - 5);
+		coordinates.x = rand() % (mapRightCoordinate - 5);
 		return coordinates;
 	}
 }
@@ -162,7 +166,7 @@ void TankRenderer::moveTank()
 		int keyPressed = _getch();
 		if (keyPressed == KEY_UP)
 		{
-			if (tankDirection == directionPoints::UP && tankOnPath())
+			if (tankDirection == directionPoints::UP && tankOnPath() && borderOnPath())
 			{
 				clearTankUp();
 				currentTankPosition.y--;
@@ -177,7 +181,7 @@ void TankRenderer::moveTank()
 		}
 		else if (keyPressed == KEY_DOWN)
 		{
-			if (tankDirection == directionPoints::DOWN && tankOnPath())
+			if (tankDirection == directionPoints::DOWN && tankOnPath() && borderOnPath())
 			{
 
 				clearTankDown();
@@ -193,7 +197,7 @@ void TankRenderer::moveTank()
 		}
 		else if (keyPressed == KEY_LEFT)
 		{
-			if (tankDirection == directionPoints::LEFT && tankOnPath())
+			if (tankDirection == directionPoints::LEFT && tankOnPath() && borderOnPath())
 			{
 				currentTankPosition.x--;
 				clearTankLeft();
@@ -213,7 +217,7 @@ void TankRenderer::moveTank()
 		}
 		else if (keyPressed == KEY_RIGHT)
 		{
-			if (tankDirection == directionPoints::RIGHT && tankOnPath())
+			if (tankDirection == directionPoints::RIGHT && tankOnPath() && borderOnPath())
 			{
 				clearTankRight();
 				currentTankPosition.x++;
@@ -252,7 +256,7 @@ void TankRenderer::clearTank()
 	}
 	else if (tankDirection == directionPoints::LEFT)
 	{
-		clearTankLeft();
+		clearTankLeftModified();
 	}
 }
 
@@ -342,7 +346,7 @@ bool TankRenderer::tankOnPath()
 {
 	for (int i = 0; i < Positions::getInstance()->getTankSize(); i = i + 1)
 	{
-		if (i == currentTankPosition.index)
+		if (i == currentTankPosition.index || Positions::getInstance()->getTankStatus(i) == false)
 			continue;
 		int tankOnPathX = Positions::getInstance()->tankPosition(i)->x;
 		int tankOnPathY = Positions::getInstance()->tankPosition(i)->y;
@@ -498,6 +502,33 @@ bool TankRenderer::tankOnPath()
 			}
 
 		}
+	}
+	return true;
+}
+
+
+bool TankRenderer::borderOnPath()
+{
+
+	if (tankDirection == directionPoints::UP)
+	{
+		if (currentTankPosition.y - 2 == 0)
+			return false;
+	}
+	else if (tankDirection == directionPoints::DOWN)
+	{
+		if (currentTankPosition.y == mapDownCoordinate)
+			return false;
+	}
+	else if (tankDirection == directionPoints::LEFT)
+	{
+		if (currentTankPosition.x - 2 == 0)
+			return false;
+	}
+	else if (tankDirection == directionPoints::RIGHT)
+	{
+		if (currentTankPosition.x == mapRightCoordinate - 3)
+			return false;
 	}
 	return true;
 }
