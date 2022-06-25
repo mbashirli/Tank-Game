@@ -1,4 +1,7 @@
 ﻿#include <iostream>
+#include <WS2tcpip.h>
+#include <string>
+#include <sstream>
 #include <vector>
 #include <fstream>
 #include <map>
@@ -13,6 +16,7 @@
 #include "Positions.h"
 #include "MenuRenderer.h"
 #include "GameMap.h"
+#pragma comment (lib, "ws2_32.lib")
 
 #define KEY_SPACE 32
 #define KEY_ENTER 13
@@ -23,7 +27,36 @@ void newGameMenu();;
 void settingsMenu();
 void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
+void tankGame();
+int WaitForPlayerToJoin();
 
+int main(int argc, char** argv, char** envp)
+{
+	setConfigName(argv, envp);
+	mainMenu();
+	return 0;
+}
+
+
+int WaitForPlayerToJoin()
+{
+	int clintListn = 0, socketForClient = 0;
+	struct sockaddr_in ipOfServer;
+
+	clintListn = socket(AF_INET, SOCK_STREAM, 0); // creating socket
+
+	memset(&ipOfServer, '0', sizeof(ipOfServer));
+
+	ipOfServer.sin_family = AF_INET;
+	ipOfServer.sin_addr.s_addr = htonl(INADDR_ANY);
+	ipOfServer.sin_port = htons(2017); // this is the port number of running server
+
+	bind(clintListn, (struct sockaddr*)&ipOfServer, sizeof(ipOfServer));
+	listen(clintListn, 1); // Start listening
+
+	socketForClient = accept(clintListn, (struct sockaddr*)NULL, NULL);
+	return socketForClient;
+}
 
 void tankGame()
 {
@@ -87,13 +120,6 @@ void tankGame()
 struct Bullet {
 	int x, y;
 };
-
-int main(int argc, char** argv, char** envp)
-{
-	setConfigName(argv, envp);
-	mainMenu();
-	return 0;
-}
 
 void mainMenu()
 {
