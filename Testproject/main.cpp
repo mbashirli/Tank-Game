@@ -18,9 +18,12 @@
 #include "GameMap.h"
 #pragma comment (lib, "ws2_32.lib")
 
-#define KEY_SPACE 32
 #define KEY_ENTER 13
 #define KEY_ESCAPE 27
+#define KEY_SPACE 32
+#define DEFAULT_PORT 13337
+
+fd_set master;
 
 void mainMenu();
 void newGameMenu();;
@@ -28,35 +31,91 @@ void settingsMenu();
 void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
 void tankGame();
-int WaitForPlayerToJoin();
+int acceptPlayer(SOCKET listenSOCK);
+
+
+int port = DEFAULT_PORT;
+
 
 int main(int argc, char** argv, char** envp)
 {
+	WSADATA wsadata;
+	int result = WSAStartup(MAKEWORD(2, 2), &wsadata);
+	if (result != 0) {
+		std::cout << "WSAStartup error: " << result << std::endl;
+		return 1;
+	}
+
+	SOCKET listenSOCK = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (listenSOCK == INVALID_SOCKET) {
+		std::cout << "listenSOCK error: " << WSAGetLastError() << std::endl;
+		WSACleanup();
+		return 1;
+	}
+
+	struct addrinfo* res = NULL;
+	struct addrinfo hints;
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	hints.ai_flags = AI_PASSIVE;
+	result = getaddrinfo(NULL, std::to_string(port).c_str(), &hints, &res);
+
+	if (result != 0) {
+		std::cout << "getaddrinfo error: " << WSAGetLastError() << std::endl;
+		closesocket(listenSOCK);
+		WSACleanup();
+		return 1;
+	}
+
+	result = ::bind(listenSOCK, res->ai_addr, (int)res->ai_addrlen);
+	if (result == SOCKET_ERROR) {
+		std::cout << "bind error: " << WSAGetLastError() << std::endl;
+		closesocket(listenSOCK);
+		WSACleanup();
+		return 1;
+	}
+
+	freeaddrinfo(res);
+
+	result = listen(listenSOCK, SOMAXCONN);
+	if (result == SOCKET_ERROR) {
+		std::cout << "listen error: " << WSAGetLastError() << std::endl;
+		closesocket(listenSOCK);
+		WSACleanup();
+		return 1;
+	}
+
+	std::thread acceptPlayers(acceptPlayer, listenSOCK);
+	acceptPlayers.detach();
+
+
 	setConfigName(argv, envp);
 	mainMenu();
+
 	return 0;
 }
 
 
-int WaitForPlayerToJoin()
+int acceptPlayer(SOCKET listenSOCK)
 {
-	int clintListn = 0, socketForClient = 0;
-	struct sockaddr_in ipOfServer;
-
-	clintListn = socket(AF_INET, SOCK_STREAM, 0); // creating socket
-
-	memset(&ipOfServer, '0', sizeof(ipOfServer));
-
-	ipOfServer.sin_family = AF_INET;
-	ipOfServer.sin_addr.s_addr = htonl(INADDR_ANY);
-	ipOfServer.sin_port = htons(2017); // this is the port number of running server
-
-	bind(clintListn, (struct sockaddr*)&ipOfServer, sizeof(ipOfServer));
-	listen(clintListn, 1); // Start listening
-
-	socketForClient = accept(clintListn, (struct sockaddr*)NULL, NULL);
-	return socketForClient;
+	while (true) {
+		SOCKET ClientSocket = accept(listenSOCK, NULL, NULL);
+		if (ClientSocket == INVALID_SOCKET)
+		{
+			std::cout << "accept error: " << WSAGetLastError() << std::endl;
+			closesocket(ClientSocket);
+		}
+		else
+		{
+			std::thread handle(recvAndSendToClients, ClientSocket);
+			handle.detach();
+			FD_SET(ClientSocket, &master);
+		}
+	}
 }
+
 
 void tankGame()
 {
