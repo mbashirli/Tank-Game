@@ -16,6 +16,7 @@
 #include "Positions.h"
 #include "MenuRenderer.h"
 #include "GameMap.h"
+#include "Server.h"
 #pragma comment (lib, "ws2_32.lib")
 
 #define KEY_ENTER 13
@@ -23,7 +24,6 @@
 #define KEY_SPACE 32
 #define DEFAULT_PORT "13337"
 
-fd_set master;
 
 void mainMenu();
 void newGameMenu();;
@@ -32,11 +32,9 @@ void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
 void tankGame();
 void joinServer();
+void clientTankGame();
 int initializeClientServer(std::string name, std::string newPort);
-int acceptPlayer(SOCKET listenSOCK);
-int recvAndSendData(SOCKET listenSOCK);
 int sendData(SOCKET clientSOCK);
-SOCKET generateServer();
 
 
 std::string port = DEFAULT_PORT;
@@ -46,124 +44,11 @@ std::string hostIP = "127.0.0.1";
 int main(int argc, char** argv, char** envp)
 {
 	setConfigName(argv, envp);
-
 	mainMenu();
 
 	return 0;
 }
 
-
-SOCKET generateServer()
-{
-	WSADATA wsadata;
-	int result = WSAStartup(MAKEWORD(2, 2), &wsadata);
-	if (result != 0) {
-		std::cout << "WSAStartup error: " << result << std::endl;
-		return 0;
-	}
-	else
-	{
-		std::cout << "WSAStartup OK" << std::endl;
-	}
-
-	SOCKET listenSOCK = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (listenSOCK == INVALID_SOCKET) {
-		std::cout << "listenSOCK error: " << WSAGetLastError() << std::endl;
-		WSACleanup();
-		return 0;
-	}
-	else
-	{
-		std::cout << "listenSOCK OK" << std::endl;
-	}
-
-	struct addrinfo* res = NULL;
-	struct addrinfo hints;
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags = AI_PASSIVE;
-	result = getaddrinfo(NULL, port.c_str(), &hints, &res);
-
-	if (result != 0) {
-		std::cout << "getaddrinfo error: " << WSAGetLastError() << std::endl;
-		closesocket(listenSOCK);
-		WSACleanup();
-		return 0;
-	}
-	else
-	{
-		std::cout << "getaddrinfo OK" << std::endl;
-	}
-
-	result = ::bind(listenSOCK, res->ai_addr, (int)res->ai_addrlen);
-	if (result == SOCKET_ERROR) {
-		std::cout << "bind error: " << WSAGetLastError() << std::endl;
-		closesocket(listenSOCK);
-		WSACleanup();
-		return 0;
-	}
-	else
-	{
-		std::cout << "bind OK" << std::endl;
-	}
-	freeaddrinfo(res);
-
-	result = listen(listenSOCK, SOMAXCONN);
-	if (result == SOCKET_ERROR) {
-		std::cout << "listen error: " << WSAGetLastError() << std::endl;
-		closesocket(listenSOCK);
-		WSACleanup();
-		return 0;
-	}
-	else
-	{
-		std::cout << "listen OK" << std::endl;
-	}
-	std::thread acceptPlayers(acceptPlayer, listenSOCK);
-	acceptPlayers.join();
-}
-
-int acceptPlayer(SOCKET listenSOCK)
-{
-	std::cout << "Server: Waiting for players to join...";
-	while (true) {
-		SOCKET ClientSocket = accept(listenSOCK, NULL, NULL);
-		if (ClientSocket == INVALID_SOCKET)
-		{
-			std::cout << "accept error: " << WSAGetLastError() << std::endl;
-			closesocket(ClientSocket);
-		}
-		else
-		{
-
-			std::thread handle(recvAndSendData, ClientSocket);
-			handle.detach();
-			FD_SET(ClientSocket, &master);
-		}
-	}
-}
-
-int recvAndSendData(SOCKET listenSOCK)
-{
-	char clientName[50];
-	recv(listenSOCK, clientName, 50, 0);
-
-	std::cout << std::endl << "Server: " << clientName << " joined the server.";
-
-	while (true) {
-		char recvbuf[4096];
-		ZeroMemory(recvbuf, 4096);
-		int result = recv(listenSOCK, recvbuf, 4096, 0);
-		if (result <= 0)
-		{
-			FD_CLR(listenSOCK, &master);
-			std::cout << "Server: A player disconnected" << std::endl;
-			return 0;
-		}
-	}
-}
 
 int initializeClientServer(std::string name, std::string newPort)
 {
@@ -209,7 +94,11 @@ int initializeClientServer(std::string name, std::string newPort)
 
 	std::thread send_thread(sendData, sock);
 	GameMap::getInstance()->renderMap();
-	std::thread tankThread(tankGame);
+	
+
+
+
+
 
 
 	send_thread.join();
@@ -226,6 +115,12 @@ int sendData(SOCKET clientSOCK)
 
 	} while (true);
 	return 0;
+}
+
+void clientTankGame()
+{
+
+}
 
 
 void joinServer()
@@ -246,7 +141,7 @@ void joinServer()
 	newMenuRenderer.clearTerminal();
 
 	system("CLS");
-	initializeClientServer(name, port);
+	//initializeClientServer(name, port);
 
 	return;
 }
@@ -388,9 +283,9 @@ void newGameMenu()
 					renderer.clearTerminal();
 					if (renderer.getActiveTitleID() == 1)
 					{
-						renderer.clearTerminal();
-						SOCKET serverSOCK = generateServer();
 						system("CLS");
+						Server newServer;
+						newServer.generateServer();
 						return;
 
 					}
