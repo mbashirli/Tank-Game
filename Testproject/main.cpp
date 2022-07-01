@@ -31,7 +31,10 @@ void settingsMenu();
 void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
 void tankGame();
+void joinServer();
 int acceptPlayer(SOCKET listenSOCK);
+int recvAndSendData(SOCKET listenSOCK);
+SOCKET generateServer();
 
 
 int port = DEFAULT_PORT;
@@ -39,18 +42,28 @@ int port = DEFAULT_PORT;
 
 int main(int argc, char** argv, char** envp)
 {
+	setConfigName(argv, envp);
+
+	mainMenu();
+
+	return 0;
+}
+
+
+SOCKET generateServer()
+{
 	WSADATA wsadata;
 	int result = WSAStartup(MAKEWORD(2, 2), &wsadata);
 	if (result != 0) {
 		std::cout << "WSAStartup error: " << result << std::endl;
-		return 1;
+		return 0;
 	}
 
 	SOCKET listenSOCK = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (listenSOCK == INVALID_SOCKET) {
 		std::cout << "listenSOCK error: " << WSAGetLastError() << std::endl;
 		WSACleanup();
-		return 1;
+		return 0;
 	}
 
 	struct addrinfo* res = NULL;
@@ -66,7 +79,7 @@ int main(int argc, char** argv, char** envp)
 		std::cout << "getaddrinfo error: " << WSAGetLastError() << std::endl;
 		closesocket(listenSOCK);
 		WSACleanup();
-		return 1;
+		return 0;
 	}
 
 	result = ::bind(listenSOCK, res->ai_addr, (int)res->ai_addrlen);
@@ -74,7 +87,7 @@ int main(int argc, char** argv, char** envp)
 		std::cout << "bind error: " << WSAGetLastError() << std::endl;
 		closesocket(listenSOCK);
 		WSACleanup();
-		return 1;
+		return 0;
 	}
 
 	freeaddrinfo(res);
@@ -84,22 +97,16 @@ int main(int argc, char** argv, char** envp)
 		std::cout << "listen error: " << WSAGetLastError() << std::endl;
 		closesocket(listenSOCK);
 		WSACleanup();
-		return 1;
+		return 0;
 	}
 
 	std::thread acceptPlayers(acceptPlayer, listenSOCK);
-	acceptPlayers.detach();
-
-
-	setConfigName(argv, envp);
-	mainMenu();
-
-	return 0;
+	acceptPlayers.join();
 }
-
 
 int acceptPlayer(SOCKET listenSOCK)
 {
+	std::cout << "Server: Waiting for players to join...";
 	while (true) {
 		SOCKET ClientSocket = accept(listenSOCK, NULL, NULL);
 		if (ClientSocket == INVALID_SOCKET)
@@ -109,13 +116,57 @@ int acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
-			std::thread handle(recvAndSendToClients, ClientSocket);
+			std::thread handle(recvAndSendData, ClientSocket);
 			handle.detach();
 			FD_SET(ClientSocket, &master);
 		}
 	}
 }
 
+int recvAndSendData(SOCKET listenSOCK)
+{
+	char client_name[50];
+	recv(listenSOCK, client_name, 50, 0);
+
+	char welcome_message[80] = "Server: ";
+	strcat_s(welcome_message, client_name);
+	strcat_s(welcome_message, " joined the server");
+
+
+	return 0;
+}
+
+void joinServer()
+{
+	system("CLS");
+
+	int newPort;
+	std::string name;
+	std::vector <std::string> menuItems;
+
+	menuItems.push_back("Name: ");
+
+	Menu newMenu(menuItems);
+	MenuRenderer newMenuRenderer(&newMenu);
+	newMenuRenderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+	newMenuRenderer.updateMenuPosition();
+	newMenuRenderer.render();
+
+	std::getline(std::cin, name);
+	newMenuRenderer.clearTerminal();
+
+	menuItems.clear();
+	menuItems.push_back("Port (Default 13337): ");
+
+	Menu newMenuExtension(menuItems);
+	MenuRenderer newMenuRendererExtension(&newMenuExtension);
+	newMenuRendererExtension.updateMenuPosition();
+	newMenuRendererExtension.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+	newMenuRendererExtension.render();
+
+	std::cin >> newPort;
+	port = newPort;
+}
 
 void tankGame()
 {
@@ -140,7 +191,7 @@ void tankGame()
 	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
 	animateBullets.detach();
 	animateDeath.detach();
-	
+
 	GameMap::getInstance()->renderMap();
 	while (true)
 	{
@@ -169,7 +220,7 @@ void tankGame()
 				Tanks[inactiveTank].disableTank();
 		}
 	}
-	
+
 	return;
 }
 
@@ -194,6 +245,7 @@ void mainMenu()
 	MenuRenderer renderer(&menu);
 
 	renderer.render();
+
 	while (true)
 	{
 		bool isKeyPressed = _kbhit();
@@ -232,9 +284,8 @@ void newGameMenu()
 {
 	std::vector <std::string> newGameMenuItems;
 
-	newGameMenuItems.push_back("Easy");
-	newGameMenuItems.push_back("Medium");
-	newGameMenuItems.push_back("Hard");
+	newGameMenuItems.push_back("Create Server");
+	newGameMenuItems.push_back("Join Server");
 	newGameMenuItems.push_back("Previous Menu");
 
 	Menu menu(newGameMenuItems);
@@ -257,12 +308,18 @@ void newGameMenu()
 					if (renderer.getActiveTitleID() == 1)
 					{
 						renderer.clearTerminal();
-						tankGame();
+						SOCKET serverSOCK = generateServer();
 						system("CLS");
 						return;
 
 					}
-					if (renderer.getActiveTitleID() == 4)
+					if (renderer.getActiveTitleID() == 2)
+					{
+						joinServer();
+						
+						int x; std::cin >> x;
+					}
+					if (renderer.getActiveTitleID() == 3)
 						return;
 				}
 				else
