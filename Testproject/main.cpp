@@ -21,7 +21,7 @@
 #define KEY_ENTER 13
 #define KEY_ESCAPE 27
 #define KEY_SPACE 32
-#define DEFAULT_PORT 13337
+#define DEFAULT_PORT "13337"
 
 fd_set master;
 
@@ -32,12 +32,15 @@ void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
 void tankGame();
 void joinServer();
+int initializeClientServer(std::string name, std::string newPort);
 int acceptPlayer(SOCKET listenSOCK);
 int recvAndSendData(SOCKET listenSOCK);
+int sendData(SOCKET clientSOCK);
 SOCKET generateServer();
 
 
-int port = DEFAULT_PORT;
+std::string port = DEFAULT_PORT;
+std::string hostIP = "127.0.0.1";
 
 
 int main(int argc, char** argv, char** envp)
@@ -58,12 +61,20 @@ SOCKET generateServer()
 		std::cout << "WSAStartup error: " << result << std::endl;
 		return 0;
 	}
+	else
+	{
+		std::cout << "WSAStartup OK" << std::endl;
+	}
 
 	SOCKET listenSOCK = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (listenSOCK == INVALID_SOCKET) {
 		std::cout << "listenSOCK error: " << WSAGetLastError() << std::endl;
 		WSACleanup();
 		return 0;
+	}
+	else
+	{
+		std::cout << "listenSOCK OK" << std::endl;
 	}
 
 	struct addrinfo* res = NULL;
@@ -73,13 +84,17 @@ SOCKET generateServer()
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
-	result = getaddrinfo(NULL, std::to_string(port).c_str(), &hints, &res);
+	result = getaddrinfo(NULL, port.c_str(), &hints, &res);
 
 	if (result != 0) {
 		std::cout << "getaddrinfo error: " << WSAGetLastError() << std::endl;
 		closesocket(listenSOCK);
 		WSACleanup();
 		return 0;
+	}
+	else
+	{
+		std::cout << "getaddrinfo OK" << std::endl;
 	}
 
 	result = ::bind(listenSOCK, res->ai_addr, (int)res->ai_addrlen);
@@ -89,7 +104,10 @@ SOCKET generateServer()
 		WSACleanup();
 		return 0;
 	}
-
+	else
+	{
+		std::cout << "bind OK" << std::endl;
+	}
 	freeaddrinfo(res);
 
 	result = listen(listenSOCK, SOMAXCONN);
@@ -99,7 +117,10 @@ SOCKET generateServer()
 		WSACleanup();
 		return 0;
 	}
-
+	else
+	{
+		std::cout << "listen OK" << std::endl;
+	}
 	std::thread acceptPlayers(acceptPlayer, listenSOCK);
 	acceptPlayers.join();
 }
@@ -116,6 +137,7 @@ int acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
+
 			std::thread handle(recvAndSendData, ClientSocket);
 			handle.detach();
 			FD_SET(ClientSocket, &master);
@@ -125,23 +147,91 @@ int acceptPlayer(SOCKET listenSOCK)
 
 int recvAndSendData(SOCKET listenSOCK)
 {
-	char client_name[50];
-	recv(listenSOCK, client_name, 50, 0);
+	char clientName[50];
+	recv(listenSOCK, clientName, 50, 0);
 
-	char welcome_message[80] = "Server: ";
-	strcat_s(welcome_message, client_name);
-	strcat_s(welcome_message, " joined the server");
+	std::cout << std::endl << "Server: " << clientName << " joined the server.";
+
+	while (true) {
+		char recvbuf[4096];
+		ZeroMemory(recvbuf, 4096);
+		int result = recv(listenSOCK, recvbuf, 4096, 0);
+		if (result <= 0)
+		{
+			FD_CLR(listenSOCK, &master);
+			std::cout << "Server: A player disconnected" << std::endl;
+			return 0;
+		}
+	}
+}
+
+int initializeClientServer(std::string name, std::string newPort)
+{
+	int result;
+	WSADATA wsaData;
+	result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+	if (result != 0) {
+		std::cout << "Initialize Winsock Fail: " << result << std::endl;
+		getchar();
+		return 1;
+	}
+	addrinfo hints, * res;
+	ZeroMemory(&hints, sizeof(hints));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+
+	result = getaddrinfo(hostIP.c_str(), port.c_str(), &hints, &res);
+	if (result != 0) {
+		std::cout << "getaddrinfo failed: " << result << std::endl;
+		getchar();
+		return 1;
+	}
+
+	SOCKET sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+	if (sock == INVALID_SOCKET) {
+		std::cout << "Create connect sock failed: " << WSAGetLastError() << std::endl;
+		WSACleanup();
+		getchar();
+		return 1;
+	}
+
+	result = connect(sock, res->ai_addr, (int)res->ai_addrlen);
+
+	if (result != 0) {
+		std::cout << "connect failed: " << WSAGetLastError() << std::endl;
+		getchar();
+		closesocket(sock);
+		WSACleanup();
+		return 1;
+	}
+	send(sock, name.c_str(), strlen(name.c_str()) + 1, 0);
+
+	std::thread send_thread(sendData, sock);
+	GameMap::getInstance()->renderMap();
+	std::thread tankThread(tankGame);
 
 
+	send_thread.join();
+	closesocket(sock);
+	WSACleanup();
 	return 0;
 }
+
+int sendData(SOCKET clientSOCK)
+{
+
+	do {
+
+
+	} while (true);
+	return 0;
+
 
 void joinServer()
 {
 	system("CLS");
-
-	int newPort;
-	std::string name;
+	std::string name, newPort;
 	std::vector <std::string> menuItems;
 
 	menuItems.push_back("Name: ");
@@ -155,17 +245,10 @@ void joinServer()
 	std::getline(std::cin, name);
 	newMenuRenderer.clearTerminal();
 
-	menuItems.clear();
-	menuItems.push_back("Port (Default 13337): ");
+	system("CLS");
+	initializeClientServer(name, port);
 
-	Menu newMenuExtension(menuItems);
-	MenuRenderer newMenuRendererExtension(&newMenuExtension);
-	newMenuRendererExtension.updateMenuPosition();
-	newMenuRendererExtension.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
-	newMenuRendererExtension.render();
-
-	std::cin >> newPort;
-	port = newPort;
+	return;
 }
 
 void tankGame()
@@ -224,8 +307,6 @@ void tankGame()
 	return;
 }
 
-// menu borders
-// tank advancement into another tank
 
 struct Bullet {
 	int x, y;
@@ -316,8 +397,6 @@ void newGameMenu()
 					if (renderer.getActiveTitleID() == 2)
 					{
 						joinServer();
-						
-						int x; std::cin >> x;
 					}
 					if (renderer.getActiveTitleID() == 3)
 						return;
