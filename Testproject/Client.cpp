@@ -43,8 +43,11 @@ int Client::initializeClientServer()
 	}
 	send(sock, playerName.c_str(), strlen(playerName.c_str()) + 1, 0);
 
-	std::thread send_thread(sendData, sock);
-	send_thread.join();
+	std::thread sendDataThread(sendData, sock);
+	sendDataThread.detach();
+
+	std::thread receiveDataThread(receiveData, sock);
+	receiveDataThread.join();
 
 	closesocket(sock);
 	WSACleanup();
@@ -52,8 +55,20 @@ int Client::initializeClientServer()
 
 int Client::sendData(SOCKET clientSOCK)
 {
-	do {
-		int a = 1;
-	} while (true);
-	return 0;
+	while (true)
+	{
+
+	}
+	return 1;
+}
+
+int Client::receiveData(SOCKET clientSOCK)
+{
+	GameMap::getInstance()->renderMap();
+	while (true)
+	{
+
+	}
+
+	return 1;
 }

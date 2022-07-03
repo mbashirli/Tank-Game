@@ -4,6 +4,9 @@
 #include <string>
 #include <iostream>
 #include <thread>
+#include "GameMap.h"
+#include "TankRenderer.h"
+#include "BulletRenderer.h"
 
 class Client
 {
@@ -11,9 +14,11 @@ public:
 	Client(std::string name);
 	int initializeClientServer();
 	static int sendData(SOCKET clientSOCK);
+	static int receiveData(SOCKET clientSOCK);
 private:
 	std::string port = "80";
 	std::string hostIP = "192.168.1.120";
 	std::string playerName;
+	
 };
 

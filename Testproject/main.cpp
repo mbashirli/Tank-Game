@@ -88,7 +88,7 @@ void tankGame()
 	std::vector <positionInformation> bulletInformation;
 
 
-	TankRenderer Tanks[] = { TankRenderer(players::PRIMARY, 0), TankRenderer(players::NPC, 1), TankRenderer(players::NPC, 2) };
+	TankRenderer Tanks[] = { TankRenderer( 0), TankRenderer( 1), TankRenderer( 2) };
 
 	BulletRenderer newBullet(&Tanks[0]);
 	Tanks[0].renderTank();

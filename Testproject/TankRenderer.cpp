@@ -1,16 +1,9 @@
 #include "TankRenderer.h"
 
 
-TankRenderer::TankRenderer(int player, int index)
+TankRenderer::TankRenderer(int index)
 {
-	if (player == players::NPC)
-	{
-		tankColor = colors::BLUE;
-	}
-	else if (player == players::PRIMARY)
-	{
-		tankColor = colors::GREEN;
-	}
+
 	isTankActive = true;
 	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
@@ -78,23 +71,14 @@ tankPosition TankRenderer::getScreenBufferInfo()
 	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
 	mapDownCoordinate = GameMap::getInstance()->getMapDownCoordinate();
 	tankPosition coordinates{};
-	if (player == players::PRIMARY)
-	{
-		tankColor = colors::GREEN;
-		tankDirection = directionPoints::UP;
-		coordinates.x = mapRightCoordinate / 2;
-		coordinates.y = mapDownCoordinate / 2;
-		return coordinates;
-	}
-	else if (player == players::NPC)
-	{
-		tankColor = colors::BLUE;
-		srand(time(NULL));
-		tankDirection = rand() % 4;
-		coordinates.y = rand() % (mapDownCoordinate - 5);
-		coordinates.x = rand() % (mapRightCoordinate - 5);
-		return coordinates;
-	}
+
+	tankColor = colors::BLUE;
+	srand(time(NULL));
+	tankDirection = rand() % 4;
+	coordinates.y = rand() % (mapDownCoordinate - 5);
+	coordinates.x = rand() % (mapRightCoordinate - 5);
+	return coordinates;
+
 }
 
 void TankRenderer::goToXY(short x, short y)
@@ -376,13 +360,13 @@ bool TankRenderer::tankOnPath()
 				if ((currentTankPosition.x == tankOnPathX && currentTankPosition.y - 3 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y  - 1== tankOnPathY ))
+					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
 					return false;
 			}
 			else if (Positions::getInstance()->tankPosition(i)->direction == directionPoints::LEFT)
 			{
-				if ((currentTankPosition.x == tankOnPathX  && currentTankPosition.y - 3 == tankOnPathY) ||
-					(currentTankPosition.x -1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
+				if ((currentTankPosition.x == tankOnPathX && currentTankPosition.y - 3 == tankOnPathY) ||
+					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
 					return false;

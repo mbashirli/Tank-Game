@@ -19,7 +19,7 @@ struct tankPosition {
 class TankRenderer
 {
 public:
-	TankRenderer(int player, int index);
+	TankRenderer( int index);
 	~TankRenderer();
 	tankPosition getScreenBufferInfo();
 	tankPosition getCurrentTankPosition();
@@ -46,7 +46,6 @@ private:
 	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
 	enum directionPoints { UP, DOWN, LEFT, RIGHT };
-	enum players { PRIMARY, SECONDARY, NPC };
 	enum colors {GREEN = 2, RED = 4, BLUE = 1};
 	char tankBlock;
 	int tankDirection;
