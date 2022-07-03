@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BulletRenderer.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="main.cpp" />
@@ -142,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BulletRenderer.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="Menu.h" />

@@ -93,7 +93,7 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
-
+			//Server::totalPlayersOnServer++;
 			std::thread handle(recvAndSendData, ClientSocket);
 			handle.detach();
 			FD_SET(ClientSocket, &master);
@@ -107,8 +107,6 @@ int Server::recvAndSendData(SOCKET listenSOCK)
 	char clientName[50];
 	recv(listenSOCK, clientName, 50, 0);
 	std::cout << std::endl << "Server: " << clientName << " joined the server." << std::endl;
-
-	totalPlayersOnServer++;
 
 	while (true) {
 		char recvbuf[4096];

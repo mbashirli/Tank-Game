@@ -17,12 +17,13 @@
 #include "MenuRenderer.h"
 #include "GameMap.h"
 #include "Server.h"
+#include "Client.h"
 #pragma comment (lib, "ws2_32.lib")
 
 #define KEY_ENTER 13
 #define KEY_ESCAPE 27
 #define KEY_SPACE 32
-#define DEFAULT_PORT "13337"
+
 
 
 void mainMenu();
@@ -32,13 +33,6 @@ void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
 void tankGame();
 void joinServer();
-void clientTankGame();
-int initializeClientServer(std::string name, std::string newPort);
-int sendData(SOCKET clientSOCK);
-
-
-std::string port = DEFAULT_PORT;
-std::string hostIP = "127.0.0.1";
 
 
 int main(int argc, char** argv, char** envp)
@@ -50,72 +44,6 @@ int main(int argc, char** argv, char** envp)
 }
 
 
-int initializeClientServer(std::string name, std::string newPort)
-{
-	int result;
-	WSADATA wsaData;
-	result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-	if (result != 0) {
-		std::cout << "Initialize Winsock Fail: " << result << std::endl;
-		getchar();
-		return 1;
-	}
-	addrinfo hints, * res;
-	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-
-	result = getaddrinfo(hostIP.c_str(), port.c_str(), &hints, &res);
-	if (result != 0) {
-		std::cout << "getaddrinfo failed: " << result << std::endl;
-		getchar();
-		return 1;
-	}
-
-	SOCKET sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-	if (sock == INVALID_SOCKET) {
-		std::cout << "Create connect sock failed: " << WSAGetLastError() << std::endl;
-		WSACleanup();
-		getchar();
-		return 1;
-	}
-
-	result = connect(sock, res->ai_addr, (int)res->ai_addrlen);
-
-	if (result != 0) {
-		std::cout << "connect failed: " << WSAGetLastError() << std::endl;
-		getchar();
-		closesocket(sock);
-		WSACleanup();
-		return 1;
-	}
-	send(sock, name.c_str(), strlen(name.c_str()) + 1, 0);
-
-	std::thread send_thread(sendData, sock);
-	GameMap::getInstance()->renderMap();
-	
-
-
-
-
-
-
-	send_thread.join();
-	closesocket(sock);
-	WSACleanup();
-	return 0;
-}
-
-int sendData(SOCKET clientSOCK)
-{
-
-	do {
-
-
-	} while (true);
-	return 0;
-}
 
 void clientTankGame()
 {
@@ -141,7 +69,9 @@ void joinServer()
 	newMenuRenderer.clearTerminal();
 
 	system("CLS");
-	//initializeClientServer(name, port);
+	
+	Client newClient(name);
+	newClient.initializeClientServer();
 
 	return;
 }
