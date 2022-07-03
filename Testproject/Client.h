@@ -12,8 +12,8 @@ public:
 	int initializeClientServer();
 	static int sendData(SOCKET clientSOCK);
 private:
-	std::string hostIP = "127.0.0.1";
-	std::string port = "13337";
+	std::string port = "80";
+	std::string hostIP = "192.168.1.120";
 	std::string playerName;
 };
 
