@@ -17,5 +17,7 @@ public:
 private:
 	std::string port = "13337";
 	std::string hostIP = "127.0.0.1";
+	static int totalPlayersOnServer;
+	enum directionPoints {UP, DOWN, RIGHT, LEFT};
 };
 

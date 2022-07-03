@@ -9,6 +9,7 @@ Server::Server()
 
 void Server::generateServer()
 {
+
 	WSADATA wsadata;
 	int result = WSAStartup(MAKEWORD(2, 2), &wsadata);
 	if (result != 0) {
@@ -77,6 +78,7 @@ void Server::generateServer()
 	}
 	std::thread acceptPlayers(acceptPlayer, listenSOCK);
 	acceptPlayers.join();
+
 }
 
 int Server::acceptPlayer(SOCKET listenSOCK)
@@ -104,8 +106,9 @@ int Server::recvAndSendData(SOCKET listenSOCK)
 {
 	char clientName[50];
 	recv(listenSOCK, clientName, 50, 0);
-
 	std::cout << std::endl << "Server: " << clientName << " joined the server." << std::endl;
+
+	totalPlayersOnServer++;
 
 	while (true) {
 		char recvbuf[4096];
@@ -116,6 +119,9 @@ int Server::recvAndSendData(SOCKET listenSOCK)
 			FD_CLR(listenSOCK, &master);
 			std::cout << "Server: A player disconnected" << std::endl;
 			return 0;
+		}
+		else
+		{
 		}
 	}
 }
