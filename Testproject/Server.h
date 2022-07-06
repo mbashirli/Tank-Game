@@ -16,7 +16,7 @@ public:
 	static int recvAndSendData(SOCKET listenSOCK);
 private:
 	std::string port = "80";
-	std::string hostIP = "192.168.1.120";
+	std::string hostIP = "192.168.1.129";
 	static int totalPlayersOnServer;
 	enum directionPoints {UP, DOWN, RIGHT, LEFT};
 };

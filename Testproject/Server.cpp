@@ -93,10 +93,12 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
-			//Server::totalPlayersOnServer++;
+			Server::totalPlayersOnServer++;
 			std::thread handle(recvAndSendData, ClientSocket);
 			handle.detach();
 			FD_SET(ClientSocket, &master);
+			auto tankIndex = std::to_string(totalPlayersOnServer);
+			send(master.fd_array[totalPlayersOnServer], tankIndex.c_str(), strlen(tankIndex.c_str()), 0);
 		}
 	}
 	return 1;
@@ -118,8 +120,9 @@ int Server::recvAndSendData(SOCKET listenSOCK)
 			std::cout << "Server: A player disconnected" << std::endl;
 			return 0;
 		}
-		else
+		if (recvbuf == "newTank")
 		{
+
 		}
 	}
 }
