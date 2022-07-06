@@ -93,6 +93,7 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
+
 			std::thread sendDataHandle(sendData, ClientSocket);
 			sendDataHandle.detach();
 			std::thread recvDataHandle(recvData, ClientSocket);
@@ -100,7 +101,9 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 			FD_SET(ClientSocket, &master);
 			auto tankIndex = std::to_string(totalPlayersOnServer);
 			send(master.fd_array[totalPlayersOnServer], tankIndex.c_str(), strlen(tankIndex.c_str()), 0);
-			totalPlayersOnServer++;
+			totalPlayersOnServer++; char name[100];
+			recv(listenSOCK, name, 100, 0);
+			std::cout << name << " has joined the server" << std::endl;
 		}
 	}
 	return 1;
@@ -145,7 +148,7 @@ std::vector<int> Server::explode(const char* charStr, const char& ch) {
 		}
 	}
 
-	std::cout << arr[0]<<" ";
+	std::cout << arr[1]<<" ";
 
 	Sleep(1000);
 	return result;
