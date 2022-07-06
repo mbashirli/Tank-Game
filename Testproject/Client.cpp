@@ -41,9 +41,16 @@ int Client::initializeClientServer()
 		WSACleanup();
 		return 1;
 	}
-	send(sock, playerName.c_str(), strlen(playerName.c_str()) + 1, 0);
+	GameMap::getInstance()->renderMap();
 
-	std::thread sendDataThread(sendData, sock);
+	send(sock, playerName.c_str(), strlen(playerName.c_str()) + 1, 0);
+	
+	char tankIndex[2];
+	recv(sock, tankIndex, 2, 0);
+
+	int clientIndex = std::stoi(tankIndex);
+
+	std::thread sendDataThread(sendData, sock, clientIndex);
 	sendDataThread.detach();
 
 	std::thread receiveDataThread(receiveData, sock);
@@ -55,38 +62,28 @@ int Client::initializeClientServer()
 
 
 
-int Client::setTankInformation(SOCKET clientSOCK)
+
+
+int Client::sendData(SOCKET clientSOCK, int clientIndex)
 {
-	std::string serverBuf;
-	serverBuf = "newTank";
-
-	char tankIndex[2];
-	send(clientSOCK, serverBuf.c_str(), strlen(serverBuf.c_str()), 0);
-	recv(clientSOCK, tankIndex, 2, 0);
-
-	std::cout << tankIndex << std::endl;
-
-
-	return 1;
-}
-
-
-int Client::sendData(SOCKET clientSOCK)
-{
-
-	std::string serverBuf;
-	serverBuf = "newTank";
-
-	TankRenderer newTank(0);
+	TankRenderer newTank(clientIndex);
 	BulletRenderer newBullet(&newTank);
-	int inactiveTank;
+	tankPosition tankInformation;
 
+	int inactiveTank;
+	std::string xCoord, yCoord, tankDirection, index, dataBuffer;
+
+	newTank.renderTank();
+
+	std::thread animateDeath(&TankRenderer::deathAnimation, newTank);
+	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
+	animateBullets.detach();
+	animateDeath.detach();
 
 	while (true) {
 		bool isKeyPressed = _kbhit();
 		if (isKeyPressed)
 		{
-
 			int keyPressed = _getch();
 			if (keyPressed == KEY_SPACE)
 			{
@@ -99,9 +96,17 @@ int Client::sendData(SOCKET clientSOCK)
 			}
 			else
 			{
-				//tank.moveTank();
+				newTank.moveTank();
 			}
 		}
+		xCoord = std::to_string(newTank.getCurrentTankPosition().x);
+		yCoord = std::to_string(newTank.getCurrentTankPosition().y);
+		tankDirection = std::to_string(newTank.getTankDirection());
+		index = std::to_string(clientIndex);
+		
+		//dataBuffer = xCoord + "_" + yCoord + "_" + tankDirection + "_" + index;
+		//dataBuffer = "25_32_3_1_";
+		send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 	}
 	return 1;
 }
@@ -109,9 +114,9 @@ int Client::sendData(SOCKET clientSOCK)
 
 int Client::receiveData(SOCKET clientSOCK)
 {
-	GameMap::getInstance()->renderMap();
+
 	while (true) {
-		
+
 	}
 	return 1;
 }

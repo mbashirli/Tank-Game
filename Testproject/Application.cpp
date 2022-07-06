@@ -21,3 +21,13 @@ void Application::unlockCout()
 {
 	Application::coutMutex->unlock();
 }
+
+void Application::lockServer()
+{
+	Application::serverMutex->lock();
+}
+
+void Application::unlockServer()
+{
+	Application::serverMutex-> unlock();
+}

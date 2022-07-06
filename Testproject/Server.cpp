@@ -3,7 +3,6 @@
 
 Server::Server()
 {
-
 }
 
 
@@ -84,6 +83,7 @@ void Server::generateServer()
 int Server::acceptPlayer(SOCKET listenSOCK)
 {
 	std::cout << "Server: Waiting for players to join...";
+	int totalPlayersOnServer = 0;
 	while (true) {
 		SOCKET ClientSocket = accept(listenSOCK, NULL, NULL);
 		if (ClientSocket == INVALID_SOCKET)
@@ -93,37 +93,60 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
-			Server::totalPlayersOnServer++;
-			std::thread handle(recvAndSendData, ClientSocket);
-			handle.detach();
+			std::thread sendDataHandle(sendData, ClientSocket);
+			sendDataHandle.detach();
+			std::thread recvDataHandle(recvData, ClientSocket);
+			recvDataHandle.detach();
 			FD_SET(ClientSocket, &master);
 			auto tankIndex = std::to_string(totalPlayersOnServer);
 			send(master.fd_array[totalPlayersOnServer], tankIndex.c_str(), strlen(tankIndex.c_str()), 0);
+			totalPlayersOnServer++;
 		}
 	}
 	return 1;
 }
 
-int Server::recvAndSendData(SOCKET listenSOCK)
+
+int Server::sendData(SOCKET listenSOCK)
 {
-	char clientName[50];
-	recv(listenSOCK, clientName, 50, 0);
-	std::cout << std::endl << "Server: " << clientName << " joined the server." << std::endl;
-
-	while (true) {
-		char recvbuf[4096];
-		ZeroMemory(recvbuf, 4096);
-		int result = recv(listenSOCK, recvbuf, 4096, 0);
-		if (result <= 0)
-		{
-			FD_CLR(listenSOCK, &master);
-			std::cout << "Server: A player disconnected" << std::endl;
-			return 0;
-		}
-		if (recvbuf == "newTank")
-		{
-
-		}
-	}
+	return 1;
 }
 
+
+int Server::recvData(SOCKET listenSOCK)
+{
+	char dataBuffer[100];
+	const char* buffer;
+	int xCoord, yCoord, tankDirection, index;
+	while (true) {
+		recv(listenSOCK, dataBuffer, 100, 0);
+		buffer = dataBuffer;
+		explode(buffer, '_');
+	}
+	return 1;
+}
+
+
+std::vector<int> Server::explode(const char* charStr, const char& ch) {
+
+	std::string str = charStr, next;
+	std::vector<int> result;
+	int arr[4], i = 0;
+	for (std::string::const_iterator it = str.begin(); it != str.end(); it++) {
+		if (*it == ch) {
+			if (!next.empty()) {
+				arr[i] = stoi(next);
+				i = i + 1;
+				next.clear();
+			}
+		}
+		else {
+			next += *it;
+		}
+	}
+
+	std::cout << arr[0]<<" ";
+
+	Sleep(1000);
+	return result;
+}
