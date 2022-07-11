@@ -86,8 +86,6 @@ void Server::generateServer()
 int Server::acceptPlayer(SOCKET listenSOCK)
 {
 	std::cout << "Server: Waiting for players to join..." << std::endl;
-
-
 	int totalPlayersOnServer = 0;
 
 	while (true) {
@@ -100,12 +98,13 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		else
 		{
 
-			/*FD_SET(ClientSocket, &master);
+			FD_SET(ClientSocket, &master);
 			std::string tankIndex = std::to_string(totalPlayersOnServer);
 			send(master.fd_array[totalPlayersOnServer], tankIndex.c_str(), strlen(tankIndex.c_str()), 0);
 
 			std::thread recvDataHandle(recvData, ClientSocket, std::stoi(tankIndex));
-			recvDataHandle.detach();*/
+			recvDataHandle.detach();
+			totalPlayersOnServer++;
 
 		}
 	}
