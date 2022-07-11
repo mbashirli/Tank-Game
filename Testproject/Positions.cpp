@@ -1,12 +1,7 @@
 #include "Positions.h"
 
 Positions::Positions(){
-	tankPositions.push_back({0,0,0,0});
-	tankPositions.push_back({0,0,0,0});
-	tankPositions.push_back({0,0,0,0});
-	tankPositions.push_back({});
-	tankPositions.push_back({});
-	tankPositions.push_back({});
+	
 }
 Positions* Positions::instance;
 
@@ -19,7 +14,7 @@ Positions* Positions::getInstance()
 	return instance;
 }
 
-void Positions::updateTankPosition(int index, int xCoord, int yCoord, int direction)
+void Positions::updateTankPosition(int xCoord, int yCoord, int direction, int index)
 {
 	if (index < tankPositions.size())
 	{
@@ -27,14 +22,15 @@ void Positions::updateTankPosition(int index, int xCoord, int yCoord, int direct
 	}
 	else
 	{
-		std::cout<<index;
-
+		//std::cout << "Index: "<< index << std::endl;
+		tankPositions.push_back({xCoord, yCoord, direction});
 	}
 }
 
 Position* Positions::getTankPosition(int index)
 {
-	return &tankPositions[index];
+	if (index < tankPositions.size())
+		return &tankPositions[index];
 }
 
 int Positions::getTotalTanks()
@@ -52,9 +48,9 @@ bool Positions::getTankStatus(int index)
 	return tankPositions[index].isTankActive;
 }
 
-void Positions::increaseTankAmount()
+void Positions::updateTankAmount(int amount)
 {
-	totalTankAmount++;
+	totalTankAmount = amount;
 }
 void Positions::decreaseTankAmount()
 {

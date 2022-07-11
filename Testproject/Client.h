@@ -26,7 +26,7 @@ public:
 
 private:
 	std::string port = "80";
-	std::string hostIP = "192.168.1.129";
+	std::string hostIP = "192.168.1.120";
 	std::string playerName;
 	int clientIndex;
 };

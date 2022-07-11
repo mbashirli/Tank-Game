@@ -21,12 +21,12 @@ public:
 	Server();
 	void generateServer();
 	static int acceptPlayer(SOCKET listenSOCK);
-	static int recvData(SOCKET listenSOCK);
-	static int sendData(SOCKET listenSOCK);
+	static int recvData(SOCKET listenSOCK, int playerIndex);
+	static int sendData();
 	static playerInformation acceptData(std::string dataPacket);
 private:
 	std::string port = "80";
-	std::string hostIP = "192.168.1.129";
+	std::string hostIP = "192.168.1.120";
 	static std::vector <playerInformation> playersData;
 	enum directionPoints {UP, DOWN, RIGHT, LEFT};
 };

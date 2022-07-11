@@ -44,11 +44,11 @@ int Client::initializeClientServer()
 	GameMap::getInstance()->renderMap();
 
 	send(sock, playerName.c_str(), strlen(playerName.c_str()) + 1, 0);
-	
-	char tankIndex[2];
-	recv(sock, tankIndex, 2, 0);
 
+	char tankIndex[1];
+	recv(sock, tankIndex, 1, 0);
 	clientIndex = std::stoi(tankIndex);
+
 	std::thread sendDataThread(sendData, sock, clientIndex);
 	sendDataThread.detach();
 
@@ -96,18 +96,14 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 			else
 			{
 				newTank.moveTank();
+				xCoord = std::to_string(newTank.getCurrentTankPosition().x);
+				yCoord = std::to_string(newTank.getCurrentTankPosition().y);
+				tankDirection = std::to_string(newTank.getTankDirection());
+				index = std::to_string(clientIndex);
+				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index;
+				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 			}
 		}
-		xCoord = std::to_string(newTank.getCurrentTankPosition().x);
-		yCoord = std::to_string(newTank.getCurrentTankPosition().y);
-		tankDirection = std::to_string(newTank.getTankDirection());
-		index = std::to_string(clientIndex);
-		
-		dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index;
-		send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
-
-		std::cout << Positions::getInstance()->getTankPosition(0)->x << std::endl;
-		std::cout << Positions::getInstance()->getTankPosition(0)->y << std::endl;
 	}
 	return 1;
 }

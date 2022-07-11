@@ -12,13 +12,14 @@ class Positions
 {
 public:
 	static Positions* getInstance();
-	void updateTankPosition(int index, int xCoord, int yCoord, int direction);
+	void updateTankPosition(int xCoord, int yCoord, int direction, int index);
 	Position* getTankPosition(int index);
 	int getTotalTanks();
 	bool getTankStatus(int index);
 	void killTank(int index);
-	void increaseTankAmount();
+	void updateTankAmount(int amount);
 	void decreaseTankAmount();
+
 private:
 	Positions();
 	std::vector<Position> tankPositions;
