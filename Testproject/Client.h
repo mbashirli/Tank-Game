@@ -8,6 +8,7 @@
 #include "TankRenderer.h"
 #include "BulletRenderer.h"
 #include "TankRenderer.h"
+#include "sstream"
 
 #define KEY_ENTER 13
 #define KEY_ESCAPE 27
@@ -21,10 +22,12 @@ public:
 	int initializeClientServer();
 	static int sendData(SOCKET clientSOCK, int clientIndex);
 	static int receiveData(SOCKET clientSOCK);
+	static void acceptData(std::string dataPacket);
 
 private:
 	std::string port = "80";
-	std::string hostIP = "192.168.1.120";
+	std::string hostIP = "192.168.1.129";
 	std::string playerName;
+	int clientIndex;
 };
 

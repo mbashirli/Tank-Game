@@ -48,8 +48,7 @@ int Client::initializeClientServer()
 	char tankIndex[2];
 	recv(sock, tankIndex, 2, 0);
 
-	int clientIndex = std::stoi(tankIndex);
-
+	clientIndex = std::stoi(tankIndex);
 	std::thread sendDataThread(sendData, sock, clientIndex);
 	sendDataThread.detach();
 
@@ -104,9 +103,11 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 		tankDirection = std::to_string(newTank.getTankDirection());
 		index = std::to_string(clientIndex);
 		
-		//dataBuffer = xCoord + "_" + yCoord + "_" + tankDirection + "_" + index;
-		//dataBuffer = "25_32_3_1_";
+		dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index;
 		send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
+
+		std::cout << Positions::getInstance()->getTankPosition(0)->x << std::endl;
+		std::cout << Positions::getInstance()->getTankPosition(0)->y << std::endl;
 	}
 	return 1;
 }
@@ -114,9 +115,27 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 
 int Client::receiveData(SOCKET clientSOCK)
 {
-
+	char dataBuffer[20];
+	int result;
 	while (true) {
-
+		result = recv(clientSOCK, dataBuffer, 20, 0);
+		if (result > 0)
+		{
+			acceptData(dataBuffer);
+		}
+		else
+		{
+			std::cout << "ERROR" << std::endl;
+			return 1;
+		}
 	}
 	return 1;
+}
+
+void Client::acceptData(std::string dataPacket)
+{
+	std::istringstream is(dataPacket);
+	int xCoord, yCoord, tankDirection, index, n;
+	is >> xCoord >> yCoord >> tankDirection >> index;
+	Positions::getInstance()->updateTankPosition(index, xCoord, yCoord, tankDirection);
 }

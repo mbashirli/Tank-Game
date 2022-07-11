@@ -7,9 +7,13 @@
 #include <vector>
 #include <mutex>
 #include "Client.h"
+#include <sstream>
 
 static fd_set master;
 
+struct playerInformation {
+	int xCoord, yCoord, tankDirection, index;
+};
 
 class Server
 {
@@ -19,12 +23,11 @@ public:
 	static int acceptPlayer(SOCKET listenSOCK);
 	static int recvData(SOCKET listenSOCK);
 	static int sendData(SOCKET listenSOCK);
-	static void updateTankPositions(std::string newData);
-	static std::vector<int> explode(const char* charStr, const char& ch);
-	static void tester();
+	static playerInformation acceptData(std::string dataPacket);
 private:
 	std::string port = "80";
-	std::string hostIP = "192.168.1.120";
+	std::string hostIP = "192.168.1.129";
+	static std::vector <playerInformation> playersData;
 	enum directionPoints {UP, DOWN, RIGHT, LEFT};
 };
 
