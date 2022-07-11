@@ -20,6 +20,7 @@ class TankRenderer
 {
 public:
 	TankRenderer( int index);
+	TankRenderer();
 	~TankRenderer();
 	tankPosition getScreenBufferInfo();
 	tankPosition getCurrentTankPosition();
@@ -29,6 +30,7 @@ public:
 	void disableConsoleCursor();
 	void moveTank();
 	void disableTank();
+	void renderCustomTank(int xCoord, int yCoord, int direction);
 	void clearTank();
 	void clearTankUp();
 	void clearTankDown();

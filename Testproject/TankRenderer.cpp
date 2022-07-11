@@ -1,6 +1,11 @@
 #include "TankRenderer.h"
 
 
+TankRenderer::TankRenderer()
+{
+
+}
+
 TankRenderer::TankRenderer(int index)
 {
 
@@ -27,6 +32,47 @@ void TankRenderer::disableTank()
 bool TankRenderer::isTankDisabled()
 {
 	return isTankActive;
+}
+
+void TankRenderer::renderCustomTank(int xCoord, int yCoord, int direction)
+{
+	if (direction == directionPoints::UP)
+	{
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << tankBlock;
+		goToXY(xCoord, yCoord);
+		std::cout << tankBlock << tankBlock << tankBlock;
+	}
+	else if (direction == directionPoints::DOWN)
+	{
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << tankBlock;
+		goToXY(xCoord, yCoord);
+		std::cout << tankBlock << tankBlock << tankBlock;
+
+	}
+	else if (direction == directionPoints::LEFT)
+	{
+		goToXY(xCoord, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << tankBlock;
+	}
+	else if (direction == directionPoints::RIGHT)
+	{
+		goToXY(xCoord + 2, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << tankBlock;
+	}
 }
 
 void TankRenderer::deathAnimation()

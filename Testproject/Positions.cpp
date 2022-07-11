@@ -1,12 +1,15 @@
 #include "Positions.h"
 
 Positions::Positions(){
+<<<<<<< Updated upstream
 	tankPositions.push_back({0,0,0,0});
 	tankPositions.push_back({0,0,0,0});
 	tankPositions.push_back({0,0,0,0});
 	tankPositions.push_back({});
 	tankPositions.push_back({});
 	tankPositions.push_back({});
+=======
+>>>>>>> Stashed changes
 }
 Positions* Positions::instance;
 
@@ -27,8 +30,12 @@ void Positions::updateTankPosition(int index, int xCoord, int yCoord, int direct
 	}
 	else
 	{
+<<<<<<< Updated upstream
 		std::cout<<index;
 
+=======
+		tankPositions.push_back({xCoord, yCoord, direction});
+>>>>>>> Stashed changes
 	}
 }
 
@@ -39,7 +46,7 @@ Position* Positions::getTankPosition(int index)
 
 int Positions::getTotalTanks()
 {
-	return totalTankAmount;
+	return tankPositions.size();
 }
 
 void Positions::killTank(int index)

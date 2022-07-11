@@ -95,10 +95,14 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
+<<<<<<< Updated upstream
 			std::thread recvDataHandle(recvData, ClientSocket);
 			recvDataHandle.detach();
 			std::thread sendDataHandle(sendData, ClientSocket);
 			sendDataHandle.detach();
+=======
+
+>>>>>>> Stashed changes
 			FD_SET(ClientSocket, &master);
 			std::string tankIndex = std::to_string(totalPlayersOnServer);
 			send(master.fd_array[totalPlayersOnServer], tankIndex.c_str(), strlen(tankIndex.c_str()), 0);
@@ -109,6 +113,7 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 	return 1;
 }
 
+<<<<<<< Updated upstream
 
 int Server::sendData(SOCKET listenSOCK)
 {
@@ -123,6 +128,11 @@ int Server::sendData(SOCKET listenSOCK)
 			tankDirection = std::to_string(Positions::getInstance()->getTankPosition(i)->direction);
 			dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + std::to_string(i);*/
 			//	send(listenSOCK, dataBuffer.c_str(), dataBuffer.length(), 0)
+=======
+			std::thread recvDataHandle(recvData, ClientSocket, std::stoi(tankIndex));
+			recvDataHandle.detach();
+			totalPlayersOnServer++;
+>>>>>>> Stashed changes
 		}
 		dataBuffer = "631 69 2 2 ";
 		send(listenSOCK, dataBuffer.c_str(), dataBuffer.length(), 0);

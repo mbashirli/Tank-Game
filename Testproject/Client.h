@@ -22,11 +22,16 @@ public:
 	int initializeClientServer();
 	static int sendData(SOCKET clientSOCK, int clientIndex);
 	static int receiveData(SOCKET clientSOCK);
+	static void renderTanks(int clientIndex);
 	static void acceptData(std::string dataPacket);
 
 private:
 	std::string port = "80";
+<<<<<<< Updated upstream
 	std::string hostIP = "192.168.1.129";
+=======
+	std::string hostIP = "192.168.1.116";
+>>>>>>> Stashed changes
 	std::string playerName;
 	int clientIndex;
 };

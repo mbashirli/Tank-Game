@@ -53,7 +53,10 @@ int Client::initializeClientServer()
 	sendDataThread.detach();
 
 	std::thread receiveDataThread(receiveData, sock);
-	receiveDataThread.join();
+	receiveDataThread.detach();
+
+	std::thread renderOtherTanks(renderTanks, clientIndex);
+	renderOtherTanks.join();
 
 	closesocket(sock);
 	WSACleanup();
@@ -137,5 +140,24 @@ void Client::acceptData(std::string dataPacket)
 	std::istringstream is(dataPacket);
 	int xCoord, yCoord, tankDirection, index, n;
 	is >> xCoord >> yCoord >> tankDirection >> index;
-	Positions::getInstance()->updateTankPosition(index, xCoord, yCoord, tankDirection);
+	Positions::getInstance()->updateTankPosition( xCoord, yCoord, tankDirection, index);
+}
+
+
+void Client::renderTanks(int clientIndex)
+{
+	TankRenderer tankRenderer;
+	int xCoord, yCoord, direction;
+	while (true)
+	{
+		for (int i = 0; i < Positions::getInstance()->getTotalTanks(); i = i + 1)
+		{
+			if (i == clientIndex)
+				continue;
+			xCoord = Positions::getInstance()->getTankPosition(i)->x;
+			yCoord = Positions::getInstance()->getTankPosition(i)->y;
+			direction = Positions::getInstance()->getTankPosition(i)->direction;
+			tankRenderer.renderCustomTank(xCoord, yCoord, direction);
+		}
+	}
 }

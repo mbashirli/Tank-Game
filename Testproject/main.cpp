@@ -40,6 +40,7 @@ int main(int argc, char** argv, char** envp)
 	setConfigName(argv, envp);
 	mainMenu();
 
+
 	return 0;
 }
 
