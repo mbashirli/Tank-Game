@@ -26,7 +26,11 @@ public:
 	static playerInformation acceptData(std::string dataPacket);
 private:
 	std::string port = "80";
+<<<<<<< Updated upstream
 	std::string hostIP = "192.168.1.129";
+=======
+	std::string hostIP = "192.168.1.116";
+>>>>>>> Stashed changes
 	static std::vector <playerInformation> playersData;
 	enum directionPoints {UP, DOWN, RIGHT, LEFT};
 };
