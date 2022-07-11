@@ -35,7 +35,9 @@ void MenuRenderer::outCenteredText()
 		if (i + 1 == activeTitleID)
 			setTitleActiveColor();
 		go_to_xy(menuPosition.x, menuPosition.y + i);
-		std::cout << input[i] << std::endl;
+		std::cout << input[i];
+		if (i + 1 != input.size())
+			std::cout << std::endl;
 	}
 
 }

@@ -16,11 +16,15 @@
 #include "Positions.h"
 #include "MenuRenderer.h"
 #include "GameMap.h"
+#include "Server.h"
+#include "Client.h"
 #pragma comment (lib, "ws2_32.lib")
 
-#define KEY_SPACE 32
 #define KEY_ENTER 13
 #define KEY_ESCAPE 27
+#define KEY_SPACE 32
+
+
 
 void mainMenu();
 void newGameMenu();;
@@ -28,34 +32,48 @@ void settingsMenu();
 void settingsColorMenu();
 void setConfigName(char** argv, char** envp);
 void tankGame();
-int WaitForPlayerToJoin();
+void joinServer();
+
 
 int main(int argc, char** argv, char** envp)
 {
 	setConfigName(argv, envp);
 	mainMenu();
+
 	return 0;
 }
 
 
-int WaitForPlayerToJoin()
+
+void clientTankGame()
 {
-	int clintListn = 0, socketForClient = 0;
-	struct sockaddr_in ipOfServer;
 
-	clintListn = socket(AF_INET, SOCK_STREAM, 0); // creating socket
+}
 
-	memset(&ipOfServer, '0', sizeof(ipOfServer));
 
-	ipOfServer.sin_family = AF_INET;
-	ipOfServer.sin_addr.s_addr = htonl(INADDR_ANY);
-	ipOfServer.sin_port = htons(2017); // this is the port number of running server
+void joinServer()
+{
+	system("CLS");
+	std::string name, newPort;
+	std::vector <std::string> menuItems;
 
-	bind(clintListn, (struct sockaddr*)&ipOfServer, sizeof(ipOfServer));
-	listen(clintListn, 1); // Start listening
+	menuItems.push_back("Name: ");
 
-	socketForClient = accept(clintListn, (struct sockaddr*)NULL, NULL);
-	return socketForClient;
+	Menu newMenu(menuItems);
+	MenuRenderer newMenuRenderer(&newMenu);
+	newMenuRenderer.setMenuActiveColor(Config::getInstance().getCurrentMenuColor());
+	newMenuRenderer.updateMenuPosition();
+	newMenuRenderer.render();
+
+	std::getline(std::cin, name);
+	newMenuRenderer.clearTerminal();
+
+	system("CLS");
+	
+	Client newClient(name);
+	newClient.initializeClientServer();
+
+	return;
 }
 
 void tankGame()
@@ -70,7 +88,7 @@ void tankGame()
 	std::vector <positionInformation> bulletInformation;
 
 
-	TankRenderer Tanks[] = { TankRenderer(players::PRIMARY, 0), TankRenderer(players::NPC, 1), TankRenderer(players::NPC, 2) };
+	TankRenderer Tanks[] = { TankRenderer( 0), TankRenderer( 1), TankRenderer( 2) };
 
 	BulletRenderer newBullet(&Tanks[0]);
 	Tanks[0].renderTank();
@@ -81,7 +99,7 @@ void tankGame()
 	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
 	animateBullets.detach();
 	animateDeath.detach();
-	
+
 	GameMap::getInstance()->renderMap();
 	while (true)
 	{
@@ -110,12 +128,10 @@ void tankGame()
 				Tanks[inactiveTank].disableTank();
 		}
 	}
-	
+
 	return;
 }
 
-// menu borders
-// tank advancement into another tank
 
 struct Bullet {
 	int x, y;
@@ -135,6 +151,7 @@ void mainMenu()
 	MenuRenderer renderer(&menu);
 
 	renderer.render();
+
 	while (true)
 	{
 		bool isKeyPressed = _kbhit();
@@ -173,9 +190,8 @@ void newGameMenu()
 {
 	std::vector <std::string> newGameMenuItems;
 
-	newGameMenuItems.push_back("Easy");
-	newGameMenuItems.push_back("Medium");
-	newGameMenuItems.push_back("Hard");
+	newGameMenuItems.push_back("Create Server");
+	newGameMenuItems.push_back("Join Server");
 	newGameMenuItems.push_back("Previous Menu");
 
 	Menu menu(newGameMenuItems);
@@ -197,13 +213,17 @@ void newGameMenu()
 					renderer.clearTerminal();
 					if (renderer.getActiveTitleID() == 1)
 					{
-						renderer.clearTerminal();
-						tankGame();
 						system("CLS");
+						Server newServer;
+						newServer.generateServer();
 						return;
 
 					}
-					if (renderer.getActiveTitleID() == 4)
+					if (renderer.getActiveTitleID() == 2)
+					{
+						joinServer();
+					}
+					if (renderer.getActiveTitleID() == 3)
 						return;
 				}
 				else

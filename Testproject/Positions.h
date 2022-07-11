@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <iostream>
+#include <Windows.h>
 
 struct Position {
 	int x, y, direction;
@@ -11,15 +13,16 @@ class Positions
 public:
 	static Positions* getInstance();
 	void updateTankPosition(int index, int xCoord, int yCoord, int direction);
-	Position* tankPosition(int index);
-	int getTankSize();
+	Position* getTankPosition(int index);
+	int getTotalTanks();
 	bool getTankStatus(int index);
 	void killTank(int index);
-
+	void increaseTankAmount();
+	void decreaseTankAmount();
 private:
 	Positions();
 	std::vector<Position> tankPositions;
 	static Positions* instance;
-	int tankSize;
+	int totalTankAmount = 0;
 };
 
