@@ -121,7 +121,7 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 	int result;
 	recv(listenSOCK, clientName, 50, 0);
 	std::cout << clientName << " has joined the server" << std::endl;
-	std::cout << "Total players on server: " << master.fd_count;
+	std::cout << "Total players on server: " << master.fd_count << std::endl;
 	char dataBuffer[20];
 
 	while (true) {
