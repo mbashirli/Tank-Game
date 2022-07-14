@@ -22,8 +22,8 @@ void Positions::updateTankPosition(int xCoord, int yCoord, int direction, int in
 	}
 	else
 	{
-		//std::cout << "Index: "<< index << std::endl;
 		tankPositions.push_back({xCoord, yCoord, direction});
+		totalTankAmount++;
 	}
 }
 

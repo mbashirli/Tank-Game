@@ -18,6 +18,10 @@ TankRenderer::TankRenderer(int index)
 TankRenderer::~TankRenderer() {
 }
 
+TankRenderer::TankRenderer()
+{
+
+}
 
 void TankRenderer::disableTank()
 {
@@ -63,6 +67,67 @@ void TankRenderer::setTankInactiveColor()
 	SetConsoleTextAttribute(hConsole, colors::RED);
 }
 
+void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionPoint)
+{
+	Application::getInstance()->lockCout();
+
+	if (directionPoint == directionPoints::UP)
+	{
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << tankBlock;
+		goToXY(xCoord, yCoord);
+		std::cout << tankBlock << tankBlock << tankBlock;
+	}
+	else if (directionPoint == directionPoints::DOWN)
+	{
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << tankBlock;
+		goToXY(xCoord, yCoord);
+		std::cout << tankBlock << tankBlock << tankBlock;
+
+	}
+	else if (directionPoint == directionPoints::LEFT)
+	{
+		goToXY(xCoord, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << tankBlock;
+	}
+	else if (directionPoint == directionPoints::RIGHT)
+	{
+		goToXY(xCoord + 2, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord);
+		std::cout << tankBlock;
+		goToXY(xCoord + 1, yCoord);
+		std::cout << tankBlock;
+	}
+
+	if (tankDirection == directionPoints::UP)
+	{
+		clearTankUp();
+	}
+	else if (tankDirection == directionPoints::DOWN)
+	{
+		clearTankDown();
+	}
+	else if (tankDirection == directionPoints::RIGHT)
+	{
+		clearTankRight();
+	}
+	else if (tankDirection == directionPoints::LEFT)
+	{
+		clearTankLeftModified();
+	}
+
+	Application::getInstance()->unlockCout();
+}
 
 tankPosition TankRenderer::getScreenBufferInfo()
 {

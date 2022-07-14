@@ -115,15 +115,8 @@ int Client::receiveData(SOCKET clientSOCK)
 	int result;
 	while (true) {
 		result = recv(clientSOCK, dataBuffer, 20, 0);
-		if (result > 0)
-		{
-			acceptData(dataBuffer);
-		}
-		else
-		{
-			std::cout << "ERROR" << std::endl;
-			return 1;
-		}
+		std::cout << "movement";
+		acceptData(dataBuffer);
 	}
 	return 1;
 }
@@ -131,7 +124,21 @@ int Client::receiveData(SOCKET clientSOCK)
 void Client::acceptData(std::string dataPacket)
 {
 	std::istringstream is(dataPacket);
-	int xCoord, yCoord, tankDirection, index, n;
+	int xCoord, yCoord, tankDirection, index, n, totalTankAmount;
 	is >> xCoord >> yCoord >> tankDirection >> index;
-	Positions::getInstance()->updateTankPosition(index, xCoord, yCoord, tankDirection);
+
+	TankRenderer customTank;
+	Positions::getInstance()->updateTankPosition(xCoord, yCoord, tankDirection, index);
+
+	for (int i = 0; i < Positions::getInstance()->getTotalTanks(); i = i + 1)
+	{
+
+		if (i == index)
+			continue;
+		customTank.renderCustomTank(Positions::getInstance()->getTankPosition(i)->x,
+			Positions::getInstance()->getTankPosition(i)->y,
+			Positions::getInstance()->getTankPosition(i)->direction);
+		/*customTank.renderCustomTank(15, 15, 0);*/
+	}
+
 }
