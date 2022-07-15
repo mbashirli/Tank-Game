@@ -27,6 +27,7 @@ public:
 	void goToXY(short x, short y);
 	void renderTank();
 	void renderCustomTank(short xCoord, short yCoord, short directionPoint, short pressedKey);
+	void clearCustomTank(short xCoord, short yCoord, short directionPoint);
 	void setTankPosition();
 	void disableConsoleCursor();
 	void moveTank();

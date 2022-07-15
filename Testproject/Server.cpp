@@ -127,6 +127,8 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 		{
 			playerInformation data = acceptData(dataBuffer);
 			Positions::getInstance()->updateTankPosition(data.xCoord, data.yCoord, data.tankDirection, data.index);
+			
+			
 			for (int i = 0; i < master.fd_count; i = i + 1)
 				send(master.fd_array[i], dataBuffer, 20, 0);
 
@@ -149,14 +151,19 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 
 playerInformation Server::acceptData(std::string dataPacket)
 {
-	int x, y, tankDir, indx, n; playerInformation data;
+	int x, y, tankDir, indx, n, pressedKey, status; playerInformation data;
 	std::istringstream is(dataPacket);
-	is >> x >> y >> tankDir >> indx;
+	is >> x >> y >> tankDir >> indx >> pressedKey>>status;
+
+	if (status == 0)
+		Positions::getInstance()->deactiveTank(indx);
+
 
 	data.xCoord = x;
 	data.yCoord = y;
 	data.tankDirection = tankDir;
 	data.index = indx;
+	
 
 	return data;
 }

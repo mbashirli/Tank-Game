@@ -91,6 +91,9 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 			}
 			else if (keyPressed == KEY_ESCAPE)
 			{
+				newTank.clearTank();
+				dataBuffer = "0 0 0 " + index + " 0 0";
+				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 				closesocket(clientSOCK);
 				WSACleanup();
 			}
@@ -102,7 +105,7 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 				tankDirection = std::to_string(newTank.getTankDirection());
 				index = std::to_string(clientIndex);
 				pressedKey = std::to_string(Positions::getInstance()->getPressedKey());
-				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey;
+				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + "1";
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 			}
 		}
@@ -126,13 +129,20 @@ void Client::acceptData(std::string dataPacket)
 {
 	TankRenderer customTank;
 	std::istringstream is(dataPacket);
-	int xCoord, yCoord, tankDirection, index, n, totalTankAmount, pressedKey;
-	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey;
+	int xCoord, yCoord, tankDirection, index, n, totalTankAmount, pressedKey, status;
+	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey >> status;
 	Positions::getInstance()->updateTankPosition(xCoord, yCoord, tankDirection, index);
 
 
 	if (index == Positions::getInstance()->getClientIndex())
 		return;
-	customTank.renderCustomTank(xCoord,	yCoord,	tankDirection, pressedKey);
+	if (status == 0)
+	{
+		customTank.clearCustomTank(xCoord, yCoord, tankDirection);
+		return;
+	}
+
+
+	customTank.renderCustomTank(xCoord, yCoord, tankDirection, pressedKey);
 	return;
 }

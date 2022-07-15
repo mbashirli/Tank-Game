@@ -23,6 +23,7 @@ public:
 	int getClientIndex();
 	void setPressedKey(short key);
 	short getPressedKey();
+	void deactiveTank(short index);
 private:
 	Positions();
 	std::vector<Position> tankPositions;

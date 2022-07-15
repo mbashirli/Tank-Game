@@ -70,24 +70,25 @@ void TankRenderer::setTankInactiveColor()
 void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionPoint, short pressedKey)
 {
 	Application::getInstance()->lockCout();
-
-
+	std::cout << "Direction point: " << directionPoint;
+	std::cout << " Pressed Key : " << pressedKey << " "<< std::endl;
 	if (pressedKey == directionPoints::UP)
 	{
-		if (directionPoint == directionPoints::UP && tankOnPath())
-		{
-			goToXY(xCoord + 1, yCoord);
-			std::cout << " ";
-			goToXY(xCoord, yCoord + 1);
-			std::cout << "   ";
-		}
-		else
-		{
-			goToXY(xCoord + 1, yCoord);
-			std::cout << "   ";
-			goToXY(xCoord + 1, yCoord + 1);
-			std::cout << " ";
-		}
+		std::cout << "UP";
+		//if (directionPoint == directionPoints::UP && tankOnPath())
+		//{
+		//	goToXY(xCoord + 1, yCoord);
+		//	std::cout << "1";
+		//	goToXY(xCoord, yCoord + 1);
+		//	std::cout << "234";
+		//}
+		//else
+		//{
+		//	goToXY(xCoord + 1, yCoord);
+		//	std::cout << "abc";
+		//	goToXY(xCoord + 1, yCoord + 1);
+		//	std::cout << "a";
+		//}
 
 		goToXY(xCoord + 1, yCoord - 1);
 		std::cout << tankBlock;
@@ -96,8 +97,8 @@ void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionP
 	}
 	else if (pressedKey == directionPoints::DOWN)
 	{
-
-		if (directionPoint == directionPoints::UP && tankOnPath())
+		std::cout << "DOWN";
+	/*	if (directionPoint == directionPoints::UP && tankOnPath())
 		{
 			goToXY(xCoord + 1, yCoord);
 			std::cout << " ";
@@ -110,15 +111,16 @@ void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionP
 			std::cout << "   ";
 			goToXY(xCoord + 1, yCoord);
 			std::cout << " ";
-		}
+		}*/
 		
 		goToXY(xCoord + 1, yCoord + 1);
 		std::cout << tankBlock;
 		goToXY(xCoord, yCoord);
 		std::cout << tankBlock << tankBlock << tankBlock;
 	}
-	else if (directionPoint == directionPoints::LEFT && tankOnPath())
+	else if (pressedKey == directionPoints::LEFT)
 	{
+		std::cout << "LEFT";
 		goToXY(xCoord, yCoord);
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord - 1);
@@ -127,16 +129,10 @@ void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionP
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord + 1);
 		std::cout << tankBlock;
-
-		goToXY(xCoord + 2, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord + 2, yCoord);
-		std::cout << " ";
-		goToXY(xCoord + 2, yCoord + 1);
-		std::cout << " ";
 	}
-	if (directionPoint == directionPoints::RIGHT && tankOnPath())
+	if (pressedKey == directionPoints::RIGHT)
 	{
+		std::cout << "RIGHT";
 		goToXY(xCoord + 2, yCoord);
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord - 1);
@@ -145,18 +141,53 @@ void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionP
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord + 1);
 		std::cout << tankBlock;
-
-		goToXY(xCoord, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord, yCoord);
-		std::cout << " ";
-		goToXY(xCoord, yCoord + 1);
-		std::cout << " ";
 	}
 	Application::getInstance()->unlockCout();
 
 }
 
+
+void TankRenderer::clearCustomTank(short xCoord, short yCoord, short tankDirection)
+{
+	Application::getInstance()->lockCout();
+	if (tankDirection == directionPoints::UP)
+	{
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << " ";
+		goToXY(xCoord, yCoord);
+		std::cout << "   ";
+	}
+	else if (tankDirection == directionPoints::DOWN)
+	{
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << " ";
+		goToXY(xCoord, yCoord);
+		std::cout << "   ";
+	}
+	else if (tankDirection == directionPoints::LEFT)
+	{
+		goToXY(xCoord, yCoord);
+		std::cout << " ";
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << " ";
+		goToXY(xCoord + 1, yCoord);
+		std::cout << " ";
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << " ";
+	}
+	else if (tankDirection == directionPoints::RIGHT)
+	{
+		goToXY(xCoord + 2, yCoord);
+		std::cout << " ";
+		goToXY(xCoord + 1, yCoord - 1);
+		std::cout << " ";
+		goToXY(xCoord + 1, yCoord);
+		std::cout << " ";
+		goToXY(xCoord + 1, yCoord + 1);
+		std::cout << " ";
+	}
+	Application::getInstance()->lockCout();
+}
 tankPosition TankRenderer::getScreenBufferInfo()
 {
 	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();

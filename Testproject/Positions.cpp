@@ -71,3 +71,9 @@ short Positions::getPressedKey()
 {
 	return pressedKey;
 }
+
+
+void Positions::deactiveTank(short index)
+{
+	tankPositions[index].isTankActive = false;
+}
