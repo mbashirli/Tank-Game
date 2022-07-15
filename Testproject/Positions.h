@@ -19,11 +19,16 @@ public:
 	void killTank(int index);
 	void updateTankAmount(int amount);
 	void decreaseTankAmount();
-
+	void setClientIndex(int index);
+	int getClientIndex();
+	void setPressedKey(short key);
+	short getPressedKey();
 private:
 	Positions();
 	std::vector<Position> tankPositions;
 	static Positions* instance;
-	int totalTankAmount = 0;
+	short totalTankAmount = 0;
+	short clientIndex;
+	short pressedKey;
 };
 

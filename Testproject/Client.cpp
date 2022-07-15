@@ -48,6 +48,7 @@ int Client::initializeClientServer()
 	char tankIndex[1];
 	recv(sock, tankIndex, 1, 0);
 	clientIndex = std::stoi(tankIndex);
+	Positions::getInstance()->setClientIndex(clientIndex);
 
 	std::thread sendDataThread(sendData, sock, clientIndex);
 	sendDataThread.detach();
@@ -70,7 +71,7 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 	tankPosition tankInformation;
 
 	int inactiveTank;
-	std::string xCoord, yCoord, tankDirection, index, dataBuffer;
+	std::string xCoord, yCoord, tankDirection, index, dataBuffer, pressedKey;
 
 	newTank.renderTank();
 
@@ -100,7 +101,8 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 				yCoord = std::to_string(newTank.getCurrentTankPosition().y);
 				tankDirection = std::to_string(newTank.getTankDirection());
 				index = std::to_string(clientIndex);
-				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index;
+				pressedKey = std::to_string(Positions::getInstance()->getPressedKey());
+				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey;
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 			}
 		}
@@ -115,7 +117,6 @@ int Client::receiveData(SOCKET clientSOCK)
 	int result;
 	while (true) {
 		result = recv(clientSOCK, dataBuffer, 20, 0);
-		std::cout << "movement";
 		acceptData(dataBuffer);
 	}
 	return 1;
@@ -123,22 +124,15 @@ int Client::receiveData(SOCKET clientSOCK)
 
 void Client::acceptData(std::string dataPacket)
 {
-	std::istringstream is(dataPacket);
-	int xCoord, yCoord, tankDirection, index, n, totalTankAmount;
-	is >> xCoord >> yCoord >> tankDirection >> index;
-
 	TankRenderer customTank;
+	std::istringstream is(dataPacket);
+	int xCoord, yCoord, tankDirection, index, n, totalTankAmount, pressedKey;
+	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey;
 	Positions::getInstance()->updateTankPosition(xCoord, yCoord, tankDirection, index);
 
-	for (int i = 0; i < Positions::getInstance()->getTotalTanks(); i = i + 1)
-	{
 
-		if (i == index)
-			continue;
-		customTank.renderCustomTank(Positions::getInstance()->getTankPosition(i)->x,
-			Positions::getInstance()->getTankPosition(i)->y,
-			Positions::getInstance()->getTankPosition(i)->direction);
-		/*customTank.renderCustomTank(15, 15, 0);*/
-	}
-
+	if (index == Positions::getInstance()->getClientIndex())
+		return;
+	customTank.renderCustomTank(xCoord,	yCoord,	tankDirection, pressedKey);
+	return;
 }

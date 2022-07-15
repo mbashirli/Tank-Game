@@ -26,7 +26,7 @@ public:
 	tankPosition getCurrentTankPosition();
 	void goToXY(short x, short y);
 	void renderTank();
-	void renderCustomTank(short xCoord, short yCoord, short directionPoint);
+	void renderCustomTank(short xCoord, short yCoord, short directionPoint, short pressedKey);
 	void setTankPosition();
 	void disableConsoleCursor();
 	void moveTank();
