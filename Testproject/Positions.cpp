@@ -20,11 +20,6 @@ void Positions::updateTankPosition(int xCoord, int yCoord, int direction, int in
 	{
 		tankPositions[index] = {xCoord, yCoord, direction};
 	}
-	else
-	{
-		//std::cout << "Index: "<< index << std::endl;
-		tankPositions.push_back({xCoord, yCoord, direction});
-	}
 }
 
 Position* Positions::getTankPosition(int index)
@@ -55,4 +50,24 @@ void Positions::updateTankAmount(int amount)
 void Positions::decreaseTankAmount()
 {
 	totalTankAmount--;
+}
+
+void Positions::setClientIndex(int index)
+{
+	clientIndex = index;
+}
+
+int Positions::getClientIndex()
+{
+	return clientIndex;
+}
+
+void Positions::setPressedKey(short key)
+{
+	this->pressedKey = key;
+}
+
+short Positions::getPressedKey()
+{
+	return pressedKey;
 }

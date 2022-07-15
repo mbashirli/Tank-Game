@@ -86,8 +86,6 @@ void Server::generateServer()
 int Server::acceptPlayer(SOCKET listenSOCK)
 {
 	std::cout << "Server: Waiting for players to join..." << std::endl;
-
-
 	int totalPlayersOnServer = 0;
 
 	while (true) {
@@ -99,14 +97,12 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 		}
 		else
 		{
-
-			/*FD_SET(ClientSocket, &master);
+			FD_SET(ClientSocket, &master);
 			std::string tankIndex = std::to_string(totalPlayersOnServer);
 			send(master.fd_array[totalPlayersOnServer], tankIndex.c_str(), strlen(tankIndex.c_str()), 0);
-
 			std::thread recvDataHandle(recvData, ClientSocket, std::stoi(tankIndex));
-			recvDataHandle.detach();*/
-
+			recvDataHandle.detach();
+			totalPlayersOnServer++;
 		}
 	}
 
@@ -122,7 +118,7 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 	int result;
 	recv(listenSOCK, clientName, 50, 0);
 	std::cout << clientName << " has joined the server" << std::endl;
-	std::cout << "Total players on server: " << master.fd_count;
+	std::cout << "Total players on server: " << master.fd_count << std::endl;
 	char dataBuffer[20];
 
 	while (true) {
@@ -132,14 +128,8 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 			playerInformation data = acceptData(dataBuffer);
 			Positions::getInstance()->updateTankPosition(data.xCoord, data.yCoord, data.tankDirection, data.index);
 			for (int i = 0; i < master.fd_count; i = i + 1)
-			{
-				xCoord = std::to_string(Positions::getInstance()->getTankPosition(i)->x);
-				yCoord = std::to_string(Positions::getInstance()->getTankPosition(i)->y);
-				tankDirection = std::to_string(Positions::getInstance()->getTankPosition(i)->direction);
+				send(master.fd_array[i], dataBuffer, 20, 0);
 
-				sendableDataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + std::to_string(i);
-				send(master.fd_array[i], sendableDataBuffer.c_str(), sendableDataBuffer.length(), 0);
-			}
 		}
 		else if (result <= 0)
 		{
