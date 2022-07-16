@@ -28,6 +28,6 @@ private:
 	std::string port = "80";
 	std::string hostIP = "192.168.1.186";
 	static std::vector <playerInformation> playersData;
-	enum directionPoints {UP, DOWN, RIGHT, LEFT};
+	enum directionPoints {UP, DOWN, LEFT, RIGHT};
 };
 
