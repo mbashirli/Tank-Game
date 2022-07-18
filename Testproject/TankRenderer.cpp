@@ -67,60 +67,38 @@ void TankRenderer::setTankInactiveColor()
 	SetConsoleTextAttribute(hConsole, colors::RED);
 }
 
-void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionPoint, short pressedKey)
+void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionPoint)
 {
 	Application::getInstance()->lockCout();
-	std::cout << "Direction point: " << directionPoint;
-	std::cout << " Pressed Key : " << pressedKey << " "<< std::endl;
-	if (pressedKey == directionPoints::UP)
+
+	if (directionPoint == directionPoints::UP && tankOnPath())
 	{
-		std::cout << "UP";
-		//if (directionPoint == directionPoints::UP && tankOnPath())
-		//{
-		//	goToXY(xCoord + 1, yCoord);
-		//	std::cout << "1";
-		//	goToXY(xCoord, yCoord + 1);
-		//	std::cout << "234";
-		//}
-		//else
-		//{
-		//	goToXY(xCoord + 1, yCoord);
-		//	std::cout << "abc";
-		//	goToXY(xCoord + 1, yCoord + 1);
-		//	std::cout << "a";
-		//}
+		goToXY(xCoord + 1, yCoord);
+		std::cout << " ";
+		goToXY(xCoord, yCoord + 1);
+		std::cout << "   ";
 
 		goToXY(xCoord + 1, yCoord - 1);
 		std::cout << tankBlock;
 		goToXY(xCoord, yCoord);
 		std::cout << tankBlock << tankBlock << tankBlock;
 	}
-	else if (pressedKey == directionPoints::DOWN)
+	else if (directionPoint == directionPoints::DOWN && tankOnPath())
 	{
-		std::cout << "DOWN";
-	/*	if (directionPoint == directionPoints::UP && tankOnPath())
-		{
-			goToXY(xCoord + 1, yCoord);
-			std::cout << " ";
-			goToXY(xCoord, yCoord + 1);
-			std::cout << "   ";
-		}
-		else
-		{
-			goToXY(xCoord, yCoord - 1);
-			std::cout << "   ";
-			goToXY(xCoord + 1, yCoord);
-			std::cout << " ";
-		}*/
-		
+
+		goToXY(xCoord, yCoord - 1);
+		std::cout << "   ";
+		goToXY(xCoord + 1, yCoord);
+		std::cout << " ";
+
+
 		goToXY(xCoord + 1, yCoord + 1);
 		std::cout << tankBlock;
 		goToXY(xCoord, yCoord);
 		std::cout << tankBlock << tankBlock << tankBlock;
 	}
-	else if (pressedKey == directionPoints::LEFT)
+	else if (directionPoint == directionPoints::LEFT && tankOnPath())
 	{
-		std::cout << "LEFT";
 		goToXY(xCoord, yCoord);
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord - 1);
@@ -129,10 +107,16 @@ void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionP
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord + 1);
 		std::cout << tankBlock;
+
+		goToXY(xCoord + 2, yCoord - 1);
+		std::cout << " ";
+		goToXY(xCoord + 2, yCoord);
+		std::cout << " ";
+		goToXY(xCoord + 2, yCoord + 1);
+		std::cout << " ";
 	}
-	if (pressedKey == directionPoints::RIGHT)
+	if (directionPoint == directionPoints::RIGHT && tankOnPath())
 	{
-		std::cout << "RIGHT";
 		goToXY(xCoord + 2, yCoord);
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord - 1);
@@ -141,8 +125,16 @@ void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionP
 		std::cout << tankBlock;
 		goToXY(xCoord + 1, yCoord + 1);
 		std::cout << tankBlock;
+
+		goToXY(xCoord, yCoord - 1);
+		std::cout << " ";
+		goToXY(xCoord, yCoord);
+		std::cout << " ";
+		goToXY(xCoord, yCoord + 1);
+		std::cout << " ";
 	}
 	Application::getInstance()->unlockCout();
+
 
 }
 

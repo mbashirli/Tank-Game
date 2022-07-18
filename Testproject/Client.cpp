@@ -56,6 +56,7 @@ int Client::initializeClientServer()
 	std::thread receiveDataThread(receiveData, sock);
 	receiveDataThread.join();
 
+
 	closesocket(sock);
 	WSACleanup();
 }
@@ -74,7 +75,6 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 	std::string xCoord, yCoord, tankDirection, index, dataBuffer, pressedKey;
 
 	newTank.renderTank();
-
 	std::thread animateDeath(&TankRenderer::deathAnimation, newTank);
 	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
 	animateBullets.detach();
@@ -104,7 +104,7 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 				yCoord = std::to_string(newTank.getCurrentTankPosition().y);
 				tankDirection = std::to_string(newTank.getTankDirection());
 				index = std::to_string(clientIndex);
-				pressedKey = std::to_string(Positions::getInstance()->getPressedKey());
+				pressedKey = std::to_string(keyPressed);
 				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + "1";
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 			}
@@ -143,6 +143,6 @@ void Client::acceptData(std::string dataPacket)
 	}
 
 
-	customTank.renderCustomTank(xCoord, yCoord, tankDirection, pressedKey);
+	customTank.renderCustomTank(xCoord, yCoord, tankDirection);
 	return;
 }
