@@ -118,7 +118,7 @@ void tankGame()
 			}
 			else
 			{
-				Tanks[0].moveTank();
+				Tanks[0].moveTank(keyPressed);
 			}
 		}
 		if (newBullet.isTankActive() != -1)

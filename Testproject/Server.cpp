@@ -103,7 +103,6 @@ int Server::acceptPlayer(SOCKET listenSOCK)
 			std::thread recvDataHandle(recvData, ClientSocket, std::stoi(tankIndex));
 			recvDataHandle.detach();
 			totalPlayersOnServer++;
-
 		}
 	}
 
@@ -127,12 +126,12 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 		if (result > 0)
 		{
 			playerInformation data = acceptData(dataBuffer);
-			Positions::getInstance()->updateTankPosition(data.xCoord, data.yCoord, data.tankDirection, data.index);
-			
-			
+			sendableDataBuffer = dataBuffer;
+			sendableDataBuffer = sendableDataBuffer + " " + std::to_string(master.fd_count);
 			for (int i = 0; i < master.fd_count; i = i + 1)
-				send(master.fd_array[i], dataBuffer, 20, 0);
+				send(master.fd_array[i], sendableDataBuffer.c_str(), 20, 0);
 
+			Positions::getInstance()->updateTankPosition(data.xCoord, data.yCoord, data.tankDirection, data.index);
 		}
 		else if (result <= 0)
 		{
@@ -152,18 +151,19 @@ int Server::recvData(SOCKET listenSOCK, int playerIndex)
 
 playerInformation Server::acceptData(std::string dataPacket)
 {
-	int x, y, tankDir, indx, n, pressedKey, status; playerInformation data;
+	int xCoord, yCoord, tankDirection, index, pressedKey, addBullet, status;
+	playerInformation data;
 	std::istringstream is(dataPacket);
-	is >> x >> y >> tankDir >> indx >> pressedKey>>status;
+	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey >> addBullet >> status;
 
 	if (status == 0)
-		Positions::getInstance()->deactiveTank(indx);
+		Positions::getInstance()->deactiveTank(index);
 
 
-	data.xCoord = x;
-	data.yCoord = y;
-	data.tankDirection = tankDir;
-	data.index = indx;
+	data.xCoord = xCoord;
+	data.yCoord = yCoord;
+	data.tankDirection = tankDirection;
+	data.index = index;
 	
 
 	return data;

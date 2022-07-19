@@ -79,34 +79,44 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
 	animateBullets.detach();
 	animateDeath.detach();
-
 	while (true) {
 		bool isKeyPressed = _kbhit();
+		int keyPressed;
 		if (isKeyPressed)
 		{
-			int keyPressed = _getch();
+			keyPressed = _getch();
+			if (keyPressed == 224)
+				keyPressed = _getch();
+
 			if (keyPressed == KEY_SPACE)
 			{
 				newBullet.addBullet();
+				xCoord = std::to_string(newTank.getCurrentTankPosition().x);
+				yCoord = std::to_string(newTank.getCurrentTankPosition().y);
+				tankDirection = std::to_string(newTank.getTankDirection());
+				index = std::to_string(clientIndex);
+				pressedKey = std::to_string(keyPressed);
+				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + "1 1";
+				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 			}
 			else if (keyPressed == KEY_ESCAPE)
 			{
 				newTank.clearTank();
-				dataBuffer = "0 0 0 " + index + " 0 0";
+				dataBuffer = "0 0 0 " + index + "0 0 0";
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 				closesocket(clientSOCK);
 				WSACleanup();
 			}
 			else
 			{
-				newTank.moveTank();
 				xCoord = std::to_string(newTank.getCurrentTankPosition().x);
 				yCoord = std::to_string(newTank.getCurrentTankPosition().y);
 				tankDirection = std::to_string(newTank.getTankDirection());
 				index = std::to_string(clientIndex);
 				pressedKey = std::to_string(keyPressed);
-				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + "1";
+				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + " 0 1";
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
+				newTank.moveTank(keyPressed);
 			}
 		}
 	}
@@ -127,10 +137,9 @@ int Client::receiveData(SOCKET clientSOCK)
 
 void Client::acceptData(std::string dataPacket)
 {
-	TankRenderer customTank;
 	std::istringstream is(dataPacket);
-	int xCoord, yCoord, tankDirection, index, n, totalTankAmount, pressedKey, status;
-	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey >> status;
+	int xCoord, yCoord, tankDirection, index, n, totalTankAmount, pressedKey, status, addBullet, totalPlayerCount;
+	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey >> addBullet>> status >> totalPlayerCount;
 	Positions::getInstance()->updateTankPosition(xCoord, yCoord, tankDirection, index);
 
 
@@ -138,11 +147,21 @@ void Client::acceptData(std::string dataPacket)
 		return;
 	if (status == 0)
 	{
-		customTank.clearCustomTank(xCoord, yCoord, tankDirection);
 		return;
 	}
 
 
-	customTank.renderCustomTank(xCoord, yCoord, tankDirection);
+	TankRenderer customTankRenderer(xCoord, yCoord, tankDirection, index, totalPlayerCount);
+	if (addBullet == 1)
+	{
+		/*BulletRenderer customBulletRenderer(&customTankRenderer);
+		std::thread animateCustomBullets(&BulletRenderer::renderBullets, &customBulletRenderer);
+		customBulletRenderer.addBullet();
+		animateCustomBullets.detach();*/
+	}
+
+	std::cout << Positions::getInstance()->getTankPosition(index)->x;
+	std::cout << Positions::getInstance()->getTankPosition(index)->y;
+	customTankRenderer.moveTank(pressedKey);
 	return;
 }

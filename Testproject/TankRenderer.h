@@ -20,17 +20,15 @@ class TankRenderer
 {
 public:
 	TankRenderer( int index);
-	TankRenderer();
+	TankRenderer(int xCoord, int yCoord, int tankDirection, int index, int totalPlayerCount);
 	~TankRenderer();
 	tankPosition getScreenBufferInfo();
 	tankPosition getCurrentTankPosition();
 	void goToXY(short x, short y);
 	void renderTank();
-	void renderCustomTank(short xCoord, short yCoord, short directionPoint);
-	void clearCustomTank(short xCoord, short yCoord, short directionPoint);
 	void setTankPosition();
 	void disableConsoleCursor();
-	void moveTank();
+	void moveTank(int keyPressed);
 	void disableTank();
 	void clearTank();
 	void clearTankUp();
@@ -41,6 +39,7 @@ public:
 	void deathAnimation();
 	void setTankActiveColor();
 	void setTankInactiveColor();
+	void setColorBlack();
 	bool tankOnPath();
 	bool borderOnPath();
 	int getTankDirection();
@@ -58,5 +57,8 @@ private:
 	int mapRightCoordinate, mapDownCoordinate;
 	bool isTankActive;
 	bool threadLoop;
+	bool customTank;
+	int totalPlayers;
+
 };
 

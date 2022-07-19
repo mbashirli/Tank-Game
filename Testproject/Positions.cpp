@@ -30,7 +30,7 @@ Position* Positions::getTankPosition(int index)
 
 int Positions::getTotalTanks()
 {
-	return totalTankAmount;
+	return tankPositions.size();
 }
 
 void Positions::killTank(int index)

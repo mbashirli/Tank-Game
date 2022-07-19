@@ -3,7 +3,7 @@
 
 TankRenderer::TankRenderer(int index)
 {
-
+	customTank = false;
 	isTankActive = true;
 	this->player = player;
 	currentTankPosition = getScreenBufferInfo();
@@ -11,16 +11,26 @@ TankRenderer::TankRenderer(int index)
 	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
 	mapDownCoordinate = GameMap::getInstance()->getMapDownCoordinate();
 	tankBlock = 219;
-	threadLoop = true;
 	setTankActiveColor();
 }
 
 TankRenderer::~TankRenderer() {
 }
 
-TankRenderer::TankRenderer()
+TankRenderer::TankRenderer(int xCoord, int yCoord, int tankDirection, int index, int totalPlayerCount)
 {
+	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
+	mapDownCoordinate = GameMap::getInstance()->getMapDownCoordinate();
 
+	currentTankPosition.x = xCoord;
+	currentTankPosition.y = yCoord;
+	currentTankPosition.index = index;
+
+	this->tankDirection = tankDirection;
+	this->totalPlayers = totalPlayerCount;
+	this->isTankActive = true;
+	this->customTank = true;
+	this->tankBlock = 219;
 }
 
 void TankRenderer::disableTank()
@@ -67,119 +77,12 @@ void TankRenderer::setTankInactiveColor()
 	SetConsoleTextAttribute(hConsole, colors::RED);
 }
 
-void TankRenderer::renderCustomTank(short xCoord, short yCoord, short directionPoint)
+void TankRenderer::setColorBlack()
 {
-	Application::getInstance()->lockCout();
-
-	if (directionPoint == directionPoints::UP && tankOnPath())
-	{
-		goToXY(xCoord + 1, yCoord);
-		std::cout << " ";
-		goToXY(xCoord, yCoord + 1);
-		std::cout << "   ";
-
-		goToXY(xCoord + 1, yCoord - 1);
-		std::cout << tankBlock;
-		goToXY(xCoord, yCoord);
-		std::cout << tankBlock << tankBlock << tankBlock;
-	}
-	else if (directionPoint == directionPoints::DOWN && tankOnPath())
-	{
-
-		goToXY(xCoord, yCoord - 1);
-		std::cout << "   ";
-		goToXY(xCoord + 1, yCoord);
-		std::cout << " ";
-
-
-		goToXY(xCoord + 1, yCoord + 1);
-		std::cout << tankBlock;
-		goToXY(xCoord, yCoord);
-		std::cout << tankBlock << tankBlock << tankBlock;
-	}
-	else if (directionPoint == directionPoints::LEFT && tankOnPath())
-	{
-		goToXY(xCoord, yCoord);
-		std::cout << tankBlock;
-		goToXY(xCoord + 1, yCoord - 1);
-		std::cout << tankBlock;
-		goToXY(xCoord + 1, yCoord);
-		std::cout << tankBlock;
-		goToXY(xCoord + 1, yCoord + 1);
-		std::cout << tankBlock;
-
-		goToXY(xCoord + 2, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord + 2, yCoord);
-		std::cout << " ";
-		goToXY(xCoord + 2, yCoord + 1);
-		std::cout << " ";
-	}
-	if (directionPoint == directionPoints::RIGHT && tankOnPath())
-	{
-		goToXY(xCoord + 2, yCoord);
-		std::cout << tankBlock;
-		goToXY(xCoord + 1, yCoord - 1);
-		std::cout << tankBlock;
-		goToXY(xCoord + 1, yCoord);
-		std::cout << tankBlock;
-		goToXY(xCoord + 1, yCoord + 1);
-		std::cout << tankBlock;
-
-		goToXY(xCoord, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord, yCoord);
-		std::cout << " ";
-		goToXY(xCoord, yCoord + 1);
-		std::cout << " ";
-	}
-	Application::getInstance()->unlockCout();
-
-
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, 0);
 }
 
-
-void TankRenderer::clearCustomTank(short xCoord, short yCoord, short tankDirection)
-{
-	Application::getInstance()->lockCout();
-	if (tankDirection == directionPoints::UP)
-	{
-		goToXY(xCoord + 1, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord, yCoord);
-		std::cout << "   ";
-	}
-	else if (tankDirection == directionPoints::DOWN)
-	{
-		goToXY(xCoord + 1, yCoord + 1);
-		std::cout << " ";
-		goToXY(xCoord, yCoord);
-		std::cout << "   ";
-	}
-	else if (tankDirection == directionPoints::LEFT)
-	{
-		goToXY(xCoord, yCoord);
-		std::cout << " ";
-		goToXY(xCoord + 1, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord + 1, yCoord);
-		std::cout << " ";
-		goToXY(xCoord + 1, yCoord + 1);
-		std::cout << " ";
-	}
-	else if (tankDirection == directionPoints::RIGHT)
-	{
-		goToXY(xCoord + 2, yCoord);
-		std::cout << " ";
-		goToXY(xCoord + 1, yCoord - 1);
-		std::cout << " ";
-		goToXY(xCoord + 1, yCoord);
-		std::cout << " ";
-		goToXY(xCoord + 1, yCoord + 1);
-		std::cout << " ";
-	}
-	Application::getInstance()->lockCout();
-}
 tankPosition TankRenderer::getScreenBufferInfo()
 {
 	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
@@ -253,102 +156,94 @@ void TankRenderer::setTankPosition()
 		goToXY(currentTankPosition.x + 1, currentTankPosition.y + 1);
 		std::cout << tankBlock;
 	}
-	//Positions::getInstance()->updateTankPosition(currentTankPosition.index, currentTankPosition.x, currentTankPosition.y, tankDirection);
+
 }
 
 
-void TankRenderer::moveTank()
+void TankRenderer::moveTank(int keyPressed)
 {
-	if (_kbhit() && isTankActive)
+	if (keyPressed == KEY_UP)
 	{
-		int keyPressed = _getch();
-		if (keyPressed == KEY_UP)
+		if (tankDirection == directionPoints::UP && !borderOnPath() && !tankOnPath())
 		{
-			Positions::getInstance()->setPressedKey(directionPoints::UP);
-			if (tankDirection == directionPoints::UP && tankOnPath() && borderOnPath())
+			clearTankUp();
+			currentTankPosition.y--;
+			renderTank();
+		}
+		else
+		{
+			tankDirection = directionPoints::UP;
+			clearTankDown();
+			renderTank();
+		}
+	}
+	else if (keyPressed == KEY_DOWN)
+	{
+		if (tankDirection == directionPoints::DOWN && !borderOnPath() && !tankOnPath())
+		{
+			clearTankDown();
+			currentTankPosition.y++;
+			renderTank();
+		}
+		else
+		{
+			clearTankUp();
+			tankDirection = directionPoints::DOWN;
+			renderTank();
+		}
+	}
+	else if (keyPressed == KEY_LEFT)
+	{
+		if (tankDirection == directionPoints::LEFT && !borderOnPath() && !tankOnPath())
+		{
+			currentTankPosition.x--;
+			clearTankLeft();
+			renderTank();
+		}
+		else
+		{
+			if (tankDirection == directionPoints::UP)
 			{
 				clearTankUp();
-				currentTankPosition.y--;
-				renderTank();
 			}
-			else
-			{
-				tankDirection = directionPoints::UP;
-				clearTankDown();
-				renderTank();
-			}
-		}
-		else if (keyPressed == KEY_DOWN)
-		{
-			Positions::getInstance()->setPressedKey(directionPoints::DOWN);
-			if (tankDirection == directionPoints::DOWN && tankOnPath() && borderOnPath())
+			else if (tankDirection == directionPoints::DOWN)
 			{
 				clearTankDown();
-				currentTankPosition.y++;
-				renderTank();
 			}
 			else
-			{
-				clearTankUp();
-				tankDirection = directionPoints::DOWN;
-				renderTank();
-			}
-		}
-		else if (keyPressed == KEY_LEFT)
-		{
-			Positions::getInstance()->setPressedKey(directionPoints::LEFT);
-			if (tankDirection == directionPoints::LEFT && tankOnPath() && borderOnPath())
-			{
-				currentTankPosition.x--;
-				clearTankLeft();
-				renderTank();
-			}
-			else
-			{
-				if (tankDirection == directionPoints::UP)
-				{
-					clearTankUp();
-				}
-				else if (tankDirection == directionPoints::DOWN)
-				{
-					clearTankDown();
-				}
-				else
-				{
-					clearTankRight();
-				}
-				tankDirection = directionPoints::LEFT;
-				renderTank();
-			}
-		}
-		else if (keyPressed == KEY_RIGHT)
-		{
-			Positions::getInstance()->setPressedKey(directionPoints::RIGHT);
-			if (tankDirection == directionPoints::RIGHT && tankOnPath() && borderOnPath())
 			{
 				clearTankRight();
-				currentTankPosition.x++;
-				renderTank();
 			}
-			else
-			{
-				if (tankDirection == directionPoints::UP)
-				{
-					clearTankUp();
-				}
-				else if (tankDirection == directionPoints::DOWN)
-				{
-					clearTankDown();
-				}
-				else if (tankDirection == directionPoints::LEFT)
-				{
-					clearTankLeftModified();
-				}
-				tankDirection = directionPoints::RIGHT;
-				renderTank();
-			}
-
+			tankDirection = directionPoints::LEFT;
+			renderTank();
 		}
+	}
+	else if (keyPressed == KEY_RIGHT)
+	{
+		if (tankDirection == directionPoints::RIGHT && !borderOnPath() && !tankOnPath())
+		{
+			clearTankRight();
+			currentTankPosition.x++;
+			renderTank();
+		}
+		else
+		{
+			if (tankDirection == directionPoints::UP)
+			{
+				clearTankUp();
+			}
+			else if (tankDirection == directionPoints::DOWN)
+			{
+				clearTankDown();
+			}
+			else if (tankDirection == directionPoints::LEFT)
+			{
+				clearTankLeftModified();
+			}
+			tankDirection = directionPoints::RIGHT;
+			renderTank();
+		}
+
 	}
 }
 
@@ -378,7 +273,7 @@ void TankRenderer::disableConsoleCursor()
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO     cursorInfo;
 	GetConsoleCursorInfo(out, &cursorInfo);
-	cursorInfo.bVisible = false; // set the cursor visibility
+	cursorInfo.bVisible = false;
 	SetConsoleCursorInfo(out, &cursorInfo);
 
 }
@@ -386,26 +281,31 @@ void TankRenderer::disableConsoleCursor()
 void TankRenderer::clearTankUp()
 {
 	Application::getInstance()->lockCout();
+	setColorBlack();
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y - 1);
 	std::cout << " ";
 	goToXY(currentTankPosition.x, currentTankPosition.y);
 	std::cout << "   ";
+	setTankActiveColor();
 	Application::getInstance()->unlockCout();
 }
 
 void TankRenderer::clearTankDown()
 {
 	Application::getInstance()->lockCout();
+	setColorBlack();
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y + 1);
 	std::cout << " ";
 	goToXY(currentTankPosition.x, currentTankPosition.y);
 	std::cout << "   ";
+	setTankActiveColor();
 	Application::getInstance()->unlockCout();
 }
 
 void TankRenderer::clearTankLeft()
 {
 	Application::getInstance()->lockCout();
+	setColorBlack();
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y);
 	std::cout << " ";
 	goToXY(currentTankPosition.x + 2, currentTankPosition.y - 1);
@@ -414,12 +314,14 @@ void TankRenderer::clearTankLeft()
 	std::cout << " ";
 	goToXY(currentTankPosition.x + 2, currentTankPosition.y + 1);
 	std::cout << " ";
+	setTankActiveColor();
 	Application::getInstance()->unlockCout();
 }
 
 void TankRenderer::clearTankLeftModified()
 {
 	Application::getInstance()->lockCout();
+	setColorBlack();
 	goToXY(currentTankPosition.x, currentTankPosition.y);
 	std::cout << " ";
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y - 1);
@@ -428,12 +330,14 @@ void TankRenderer::clearTankLeftModified()
 	std::cout << " ";
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y + 1);
 	std::cout << " ";
+	setTankActiveColor();
 	Application::getInstance()->unlockCout();
 
 }
 void TankRenderer::clearTankRight()
 {
 	Application::getInstance()->lockCout();
+	setColorBlack();
 	goToXY(currentTankPosition.x + 2, currentTankPosition.y);
 	std::cout << " ";
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y - 1);
@@ -442,6 +346,7 @@ void TankRenderer::clearTankRight()
 	std::cout << " ";
 	goToXY(currentTankPosition.x + 1, currentTankPosition.y + 1);
 	std::cout << " ";
+	setTankActiveColor();
 	Application::getInstance()->unlockCout();
 }
 int TankRenderer::getTankDirection()
@@ -456,15 +361,16 @@ tankPosition TankRenderer::getCurrentTankPosition()
 
 bool TankRenderer::tankOnPath()
 {
-	for (int i = 0; i < Positions::getInstance()->getTotalTanks(); i = i + 1)
+	int tankOnPathX, tankOnPathY;
+	for (int i = 0; i < 0; i = i + 1)
 	{
 		if (i == currentTankPosition.index || Positions::getInstance()->getTankStatus(i) == false)
 			continue;
-		int tankOnPathX = Positions::getInstance()->getTankPosition(i)->x;
-		int tankOnPathY = Positions::getInstance()->getTankPosition(i)->y;
+		tankOnPathX = Positions::getInstance()->getTankPosition(i)->x;
+		tankOnPathY = Positions::getInstance()->getTankPosition(i)->y;
+
 		if (tankDirection == directionPoints::UP)
 		{
-
 			if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::UP)
 			{
 				if ((currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x == tankOnPathX) ||
@@ -472,7 +378,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
 					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x - 2 == tankOnPathX) ||
 					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x + 2 == tankOnPathX))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
@@ -481,7 +387,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x + 1 == tankOnPathX) ||
 					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x + 2 == tankOnPathX) ||
 					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x - 2 == tankOnPathX))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
@@ -489,7 +395,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
@@ -497,7 +403,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
-					return false;
+					return true;
 			}
 		}
 		else if (tankDirection == directionPoints::DOWN)
@@ -509,7 +415,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
 					(currentTankPosition.x + 1 == tankOnPathX - 1 && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX + 3 && currentTankPosition.y + 1 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
@@ -518,7 +424,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
 					(currentTankPosition.x + 1 == tankOnPathX - 1 && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX + 3 && currentTankPosition.y + 1 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
@@ -526,7 +432,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x + 1 == tankOnPathX + 1 && currentTankPosition.y + 1 == tankOnPathY - 2) ||
 					(currentTankPosition.x + 1 == tankOnPathX + 2 && currentTankPosition.y + 1 == tankOnPathY - 1) ||
 					(currentTankPosition.x + 1 == tankOnPathX - 1 && currentTankPosition.y + 2 == tankOnPathY + 1))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
@@ -534,7 +440,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x + 1 == tankOnPathX + 1 && currentTankPosition.y + 1 == tankOnPathY - 2) ||
 					(currentTankPosition.x + 1 == tankOnPathX + 2 && currentTankPosition.y + 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX + 3 && currentTankPosition.y + 1 == tankOnPathY))
-					return false;
+					return true;
 			}
 
 		}
@@ -546,7 +452,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY) ||
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
@@ -554,7 +460,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y == tankOnPathY - 1) ||
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y == tankOnPathY + 1) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y == tankOnPathY + 2))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
@@ -563,7 +469,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
@@ -572,7 +478,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
-					return false;
+					return true;
 			}
 		}
 		else if (tankDirection == directionPoints::LEFT)
@@ -583,7 +489,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
@@ -591,7 +497,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
@@ -601,7 +507,7 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
-					return false;
+					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
@@ -610,12 +516,12 @@ bool TankRenderer::tankOnPath()
 					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY) ||
 					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY))
-					return false;
+					return true;
 			}
 
 		}
 	}
-	return true;
+	return false;
 }
 
 
@@ -625,22 +531,22 @@ bool TankRenderer::borderOnPath()
 	if (tankDirection == directionPoints::UP)
 	{
 		if (currentTankPosition.y - 2 == 0)
-			return false;
+			return true;
 	}
 	else if (tankDirection == directionPoints::DOWN)
 	{
 		if (currentTankPosition.y == mapDownCoordinate)
-			return false;
+			return true;
 	}
 	else if (tankDirection == directionPoints::LEFT)
 	{
 		if (currentTankPosition.x - 2 == 0)
-			return false;
+			return true;
 	}
 	else if (tankDirection == directionPoints::RIGHT)
 	{
 		if (currentTankPosition.x == mapRightCoordinate - 3)
-			return false;
+			return true;
 	}
-	return true;
+	return false;
 }
