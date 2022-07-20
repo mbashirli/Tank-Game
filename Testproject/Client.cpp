@@ -68,18 +68,47 @@ int Client::initializeClientServer()
 int Client::sendData(SOCKET clientSOCK, int clientIndex)
 {
 	TankRenderer newTank(clientIndex);
+	TankRenderer clientTank;
+	clientTank.setTankPosition(0, 0, 0);
 	BulletRenderer newBullet(&newTank);
+	BulletRenderer clientBullet(&clientTank);
 	tankPosition tankInformation;
 
 	int inactiveTank;
 	std::string xCoord, yCoord, tankDirection, index, dataBuffer, pressedKey;
 
 	newTank.renderTank();
+
 	std::thread animateDeath(&TankRenderer::deathAnimation, newTank);
 	std::thread animateBullets(&BulletRenderer::renderBullets, &newBullet);
+	std::thread animateOtherBullets(&BulletRenderer::renderBullets, &clientBullet);
+
 	animateBullets.detach();
 	animateDeath.detach();
+	animateOtherBullets.detach();
+
 	while (true) {
+
+		if (Positions::getInstance()->getBulletStatus() == true)
+		{
+			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			
+			clientTank.setTankPosition(Positions::getInstance()->getBulletCoordinates().x,
+				Positions::getInstance()->getBulletCoordinates().y,
+				Positions::getInstance()->getBulletCoordinates().direction);
+			clientBullet.addBullet();	
+			Positions::getInstance()->setSendBulletFalse();
+		
+			if (Positions::getInstance()->getTankStatus(Positions::getInstance()->getClientIndex()) == false)
+			{
+				newTank.disableTank();
+			//	std::cout << "Killed tank!" << std::endl;
+			
+			}
+
+		}
+
+
 		bool isKeyPressed = _kbhit();
 		int keyPressed;
 		if (isKeyPressed)
@@ -97,6 +126,7 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 				index = std::to_string(clientIndex);
 				pressedKey = std::to_string(keyPressed);
 				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + "1 1";
+
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 			}
 			else if (keyPressed == KEY_ESCAPE)
@@ -115,10 +145,12 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 				index = std::to_string(clientIndex);
 				pressedKey = std::to_string(keyPressed);
 				dataBuffer = xCoord + " " + yCoord + " " + tankDirection + " " + index + " " + pressedKey + " 0 1";
+				Positions::getInstance()->updateTankPosition(std::stoi(xCoord), std::stoi(yCoord), std::stoi(tankDirection), std::stoi(index));
 				send(clientSOCK, dataBuffer.c_str(), dataBuffer.length() + 1, 0);
 				newTank.moveTank(keyPressed);
 			}
 		}
+
 	}
 	return 1;
 }
@@ -141,7 +173,7 @@ void Client::acceptData(std::string dataPacket)
 	int xCoord, yCoord, tankDirection, index, n, totalTankAmount, pressedKey, status, addBullet, totalPlayerCount;
 	is >> xCoord >> yCoord >> tankDirection >> index >> pressedKey >> addBullet>> status >> totalPlayerCount;
 	Positions::getInstance()->updateTankPosition(xCoord, yCoord, tankDirection, index);
-
+	//std::cout << "Index: " << index << std::endl;
 
 	if (index == Positions::getInstance()->getClientIndex())
 		return;
@@ -151,17 +183,12 @@ void Client::acceptData(std::string dataPacket)
 	}
 
 
-	TankRenderer customTankRenderer(xCoord, yCoord, tankDirection, index, totalPlayerCount);
 	if (addBullet == 1)
 	{
-		/*BulletRenderer customBulletRenderer(&customTankRenderer);
-		std::thread animateCustomBullets(&BulletRenderer::renderBullets, &customBulletRenderer);
-		customBulletRenderer.addBullet();
-		animateCustomBullets.detach();*/
+		Positions::getInstance()->setSendBulletTrue();
+		Positions::getInstance()->setBulletCoordinates(xCoord, yCoord, tankDirection);
 	}
-
-	std::cout << Positions::getInstance()->getTankPosition(index)->x;
-	std::cout << Positions::getInstance()->getTankPosition(index)->y;
+	TankRenderer customTankRenderer(xCoord, yCoord, tankDirection, index, totalPlayerCount);
 	customTankRenderer.moveTank(pressedKey);
 	return;
 }

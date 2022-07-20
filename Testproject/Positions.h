@@ -24,12 +24,21 @@ public:
 	void setPressedKey(short key);
 	short getPressedKey();
 	void deactiveTank(short index);
+	void setSendBulletTrue();
+	void setSendBulletFalse();
+	bool getBulletStatus();
+	void setBulletCoordinates(short xCoord, short yCoord, short direction);
+	Position getBulletCoordinates();
+	
 private:
 	Positions();
 	std::vector<Position> tankPositions;
+	std::vector<Position> bulletPositions;
 	static Positions* instance;
 	short totalTankAmount = 0;
 	short clientIndex;
 	short pressedKey;
+	bool bulletStatus = false;
+
 };
 

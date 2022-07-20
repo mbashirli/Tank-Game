@@ -163,17 +163,31 @@ void BulletRenderer::clearBullets()
 
 void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 {
+	int xCoord, yCoord, bulletDirection;
 	for (int i = 0; i < Positions::getInstance()->getTotalTanks(); i = i + 1)
 	{
 		if (Positions::getInstance()->getTankStatus(i) == false) {
 			it->endRender = false;
 			continue;
 		}
-		if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
+
+
+		/*if (Positions::getInstance()->getClientIndex() == i)
+		{
+			continue;
+		}*/
+
+
+		xCoord = Positions::getInstance()->getTankPosition(i)->x;
+		yCoord = Positions::getInstance()->getTankPosition(i)->y;
+		bulletDirection = Positions::getInstance()->getTankPosition(i)->direction;
+
+
+		if (bulletDirection == directionPoints::LEFT)
 		{
 
-			if (Positions::getInstance()->getTankPosition(i)->x == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			if (xCoord == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y - 1);
 				std::cout << " ";
@@ -183,17 +197,18 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				std::cout << " ";
 				it->endRender = true;
 				killTank(i);
+				
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x + 1, it->y);
 				std::cout << " ";
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y + 1 == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord + 1 == it->y)
 			{
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
@@ -204,8 +219,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y - 1 == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord - 1 == it->y)
 			{
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
@@ -221,16 +236,16 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 		else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 		{
 
-			if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			if (xCoord + 1 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 2 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			else if (xCoord + 2 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x + 1, it->y);
 				std::cout << " ";
@@ -241,8 +256,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y + 1 == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord + 1 == it->y)
 			{
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
@@ -253,8 +268,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y - 1 == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord - 1 == it->y)
 			{
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
@@ -269,8 +284,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 		}
 		else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::UP)
 		{
-			if (Positions::getInstance()->getTankPosition(i)->x + 2 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			if (xCoord + 2 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -281,8 +296,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			else if (xCoord == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -293,8 +308,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y + 1 == it->y)
+			else if (xCoord == it->x &&
+				yCoord + 1 == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -305,8 +320,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y - 1 == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord - 1 == it->y)
 			{
 				goToXY(it->x - 1, it->y);
 				std::cout << " ";
@@ -317,8 +332,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -328,8 +343,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 		}
 		else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 		{
-			if (Positions::getInstance()->getTankPosition(i)->x == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			if (xCoord == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -340,8 +355,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y + 1 == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord + 1 == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -352,8 +367,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 2 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			else if (xCoord + 2 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y + 1);
 				std::cout << " ";
@@ -364,8 +379,8 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 				it->endRender = true;
 				killTank(i);
 			}
-			else if (Positions::getInstance()->getTankPosition(i)->x + 1 == it->x &&
-				Positions::getInstance()->getTankPosition(i)->y == it->y)
+			else if (xCoord + 1 == it->x &&
+				yCoord == it->y)
 			{
 				goToXY(it->x, it->y - 1);
 				std::cout << " ";
@@ -374,6 +389,7 @@ void BulletRenderer::checkBullet(std::vector<BulletPosition>::iterator it)
 			}
 		}
 	}
+	//std::cout << "Final";
 }
 
 
@@ -392,6 +408,7 @@ int BulletRenderer::isTankActive()
 void BulletRenderer::killTank(int index)
 {
 	Positions::getInstance()->killTank(index);
+	std::cout << "deactivated tank" << std::endl;
 }
 
 void BulletRenderer::killThread()

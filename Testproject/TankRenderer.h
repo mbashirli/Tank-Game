@@ -21,6 +21,7 @@ class TankRenderer
 public:
 	TankRenderer( int index);
 	TankRenderer(int xCoord, int yCoord, int tankDirection, int index, int totalPlayerCount);
+	TankRenderer();
 	~TankRenderer();
 	tankPosition getScreenBufferInfo();
 	tankPosition getCurrentTankPosition();
@@ -44,6 +45,8 @@ public:
 	bool borderOnPath();
 	int getTankDirection();
 	bool isTankDisabled();
+
+	void setTankPosition(short xCoord, short yCoord, short tankDirection);
 private:
 	tankPosition currentTankPosition;
 	CONSOLE_SCREEN_BUFFER_INFO csbiInfo;

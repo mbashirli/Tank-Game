@@ -2,6 +2,7 @@
 
 Positions::Positions(){
 	
+	bulletPositions.push_back({});
 }
 Positions* Positions::instance;
 
@@ -16,9 +17,15 @@ Positions* Positions::getInstance()
 
 void Positions::updateTankPosition(int xCoord, int yCoord, int direction, int index)
 {
+
 	if (index < tankPositions.size())
 	{
-		tankPositions[index] = {xCoord, yCoord, direction};
+		tankPositions[index] = {xCoord, yCoord, direction, true};
+	}
+	else
+	{
+		tankPositions.push_back({ xCoord, yCoord, direction, true });
+
 	}
 }
 
@@ -76,4 +83,32 @@ short Positions::getPressedKey()
 void Positions::deactiveTank(short index)
 {
 	tankPositions[index].isTankActive = false;
+}
+
+void Positions::setSendBulletTrue()
+{
+	bulletStatus = true;
+}
+
+void Positions::setSendBulletFalse()
+{
+	bulletStatus = false;
+}
+
+
+bool Positions::getBulletStatus()
+{
+	return bulletStatus;
+}
+
+void Positions::setBulletCoordinates(short x, short y, short direction)
+{
+	bulletPositions[0].x = x;
+	bulletPositions[0].y = y;
+	bulletPositions[0].direction = direction;
+}
+
+Position Positions::getBulletCoordinates()
+{
+	return bulletPositions[0];
 }

@@ -33,6 +33,22 @@ TankRenderer::TankRenderer(int xCoord, int yCoord, int tankDirection, int index,
 	this->tankBlock = 219;
 }
 
+TankRenderer::TankRenderer()
+{
+	mapRightCoordinate = GameMap::getInstance()->getMapRightCoordinate();
+	mapDownCoordinate = GameMap::getInstance()->getMapDownCoordinate();
+
+	this->isTankActive = true;
+	this->customTank = true;
+	this->tankBlock = 219;
+}
+
+void TankRenderer::setTankPosition(short xCoord, short yCoord, short tankDirection)
+{
+	currentTankPosition.x = xCoord;
+	currentTankPosition.y = yCoord;
+	this->tankDirection = tankDirection;
+}
 void TankRenderer::disableTank()
 {
 	isTankActive = false;
@@ -362,47 +378,53 @@ tankPosition TankRenderer::getCurrentTankPosition()
 bool TankRenderer::tankOnPath()
 {
 	int tankOnPathX, tankOnPathY;
-	for (int i = 0; i < 0; i = i + 1)
+	int currentTankX, currentTankY;
+	for (int i = 0; i < Positions::getInstance()->getTotalTanks(); i = i + 1)
 	{
 		if (i == currentTankPosition.index || Positions::getInstance()->getTankStatus(i) == false)
 			continue;
 		tankOnPathX = Positions::getInstance()->getTankPosition(i)->x;
 		tankOnPathY = Positions::getInstance()->getTankPosition(i)->y;
+		currentTankX = currentTankPosition.x;
+		currentTankY = currentTankPosition.y;
+
 
 		if (tankDirection == directionPoints::UP)
 		{
 			if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::UP)
 			{
-				if ((currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x == tankOnPathX) ||
-					(currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x + 1 == tankOnPathX) ||
-					(currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
-					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x - 2 == tankOnPathX) ||
-					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x + 2 == tankOnPathX))
+				currentTankY += 1;
+				if ((currentTankY - 2 == tankOnPathY && currentTankX == tankOnPathX) ||
+					(currentTankY - 2 == tankOnPathY && currentTankX + 1 == tankOnPathX) ||
+					(currentTankY - 2 == tankOnPathY && currentTankX - 1 == tankOnPathX) ||
+					(currentTankY - 1 == tankOnPathY && currentTankX - 2 == tankOnPathX) ||
+					(currentTankY - 1 == tankOnPathY && currentTankX + 2 == tankOnPathX))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
-				if ((currentTankPosition.y - 3 == tankOnPathY && currentTankPosition.x == tankOnPathX) ||
-					(currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
-					(currentTankPosition.y - 2 == tankOnPathY && currentTankPosition.x + 1 == tankOnPathX) ||
-					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x + 2 == tankOnPathX) ||
-					(currentTankPosition.y - 1 == tankOnPathY && currentTankPosition.x - 2 == tankOnPathX))
+				currentTankY -= 1;
+				if ((currentTankY - 3 == tankOnPathY && currentTankX == tankOnPathX) ||
+					(currentTankY - 2 == tankOnPathY && currentTankX - 1 == tankOnPathX) ||
+					(currentTankY - 2 == tankOnPathY && currentTankX + 1 == tankOnPathX) ||
+					(currentTankY - 1 == tankOnPathY && currentTankX + 2 == tankOnPathX) ||
+					(currentTankY - 1 == tankOnPathY && currentTankX - 2 == tankOnPathX))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
-				if ((currentTankPosition.x == tankOnPathX && currentTankPosition.y - 3 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
+				if ((currentTankX == tankOnPathX && currentTankY - 3 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY - 1 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
-				if ((currentTankPosition.x == tankOnPathX && currentTankPosition.y - 3 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
+				if ((currentTankX == tankOnPathX && currentTankY - 3 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY - 1 == tankOnPathY))
 					return true;
 			}
 		}
@@ -410,74 +432,76 @@ bool TankRenderer::tankOnPath()
 		{
 			if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::UP)
 			{
-				if ((currentTankPosition.y + 3 == tankOnPathY && currentTankPosition.x == tankOnPathX) ||
-					(currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x + 1 == tankOnPathX) ||
-					(currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
-					(currentTankPosition.x + 1 == tankOnPathX - 1 && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 3 && currentTankPosition.y + 1 == tankOnPathY))
+				//currentTankY += 1;
+				if ((currentTankY + 3 == tankOnPathY && currentTankX == tankOnPathX) ||
+					(currentTankY + 2 == tankOnPathY && currentTankX + 1 == tankOnPathX) ||
+					(currentTankY + 2 == tankOnPathY && currentTankX - 1 == tankOnPathX) ||
+					(currentTankX + 1 == tankOnPathX - 1 && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX + 3 && currentTankY + 1 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
-				if ((currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x == tankOnPathX) ||
-					(currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x + 1 == tankOnPathX) ||
-					(currentTankPosition.y + 2 == tankOnPathY && currentTankPosition.x - 1 == tankOnPathX) ||
-					(currentTankPosition.x + 1 == tankOnPathX - 1 && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 3 && currentTankPosition.y + 1 == tankOnPathY))
+				if ((currentTankY + 2 == tankOnPathY && currentTankX == tankOnPathX) ||
+					(currentTankY + 2 == tankOnPathY && currentTankX + 1 == tankOnPathX) ||
+					(currentTankY + 2 == tankOnPathY && currentTankX - 1 == tankOnPathX) ||
+					(currentTankX + 1 == tankOnPathX - 1 && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX + 3 && currentTankY + 1 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
-				if ((currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 1 && currentTankPosition.y + 1 == tankOnPathY - 2) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 2 && currentTankPosition.y + 1 == tankOnPathY - 1) ||
-					(currentTankPosition.x + 1 == tankOnPathX - 1 && currentTankPosition.y + 2 == tankOnPathY + 1))
+				if ((currentTankX + 1 == tankOnPathX && currentTankY + 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX + 1 && currentTankY + 1 == tankOnPathY - 2) ||
+					(currentTankX + 1 == tankOnPathX + 2 && currentTankY + 1 == tankOnPathY - 1) ||
+					(currentTankX + 1 == tankOnPathX - 1 && currentTankY + 2 == tankOnPathY + 1))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
-				if ((currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 1 && currentTankPosition.y + 1 == tankOnPathY - 2) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 2 && currentTankPosition.y + 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX + 3 && currentTankPosition.y + 1 == tankOnPathY))
+				if ((currentTankX + 1 == tankOnPathX && currentTankY + 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX + 1 && currentTankY + 1 == tankOnPathY - 2) ||
+					(currentTankX + 1 == tankOnPathX + 2 && currentTankY + 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX + 3 && currentTankY + 1 == tankOnPathY))
 					return true;
 			}
 
 		}
 		else if (tankDirection == directionPoints::RIGHT)
 		{
+			//currentTankX -= 1;
 			if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::UP)
 			{
-				if ((currentTankPosition.x + 3 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY))
+				if ((currentTankX + 3 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY + 2 == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY - 1 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
-				if ((currentTankPosition.x + 3 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y == tankOnPathY - 1) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y == tankOnPathY + 1) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y == tankOnPathY + 2))
+				if ((currentTankX + 3 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY == tankOnPathY - 1) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY == tankOnPathY + 1) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY == tankOnPathY + 2))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
-				if ((currentTankPosition.x + 3 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
+				if ((currentTankX + 3 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY - 1 == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY + 2 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
-				if ((currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
-					(currentTankPosition.x + 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x + 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
+				if ((currentTankX + 2 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY - 1 == tankOnPathY) ||
+					(currentTankX + 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX + 1 == tankOnPathX && currentTankY + 2 == tankOnPathY))
 					return true;
 			}
 		}
@@ -485,37 +509,39 @@ bool TankRenderer::tankOnPath()
 		{
 			if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::UP)
 			{
-				if ((currentTankPosition.x - 3 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
+				if ((currentTankX - 3 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY - 1 == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY + 2 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::DOWN)
 			{
-				if ((currentTankPosition.x - 3 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY))
+				if ((currentTankX - 3 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY - 1 == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY - 2 == tankOnPathY))
 					return true;
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::LEFT)
 			{
-
-				if ((currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY))
+				currentTankX -= 1;
+				if ((currentTankX - 2 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY - 1 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY - 2 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY + 2 == tankOnPathY))
 					return true;
+
 			}
 			else if (Positions::getInstance()->getTankPosition(i)->direction == directionPoints::RIGHT)
 			{
-				if ((currentTankPosition.x - 3 == tankOnPathX && currentTankPosition.y == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y + 1 == tankOnPathY) ||
-					(currentTankPosition.x - 2 == tankOnPathX && currentTankPosition.y - 1 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y + 2 == tankOnPathY) ||
-					(currentTankPosition.x - 1 == tankOnPathX && currentTankPosition.y - 2 == tankOnPathY))
+				
+				if ((currentTankX - 3 == tankOnPathX && currentTankY == tankOnPathY) ||
+					(currentTankX- 2 == tankOnPathX && currentTankY + 1 == tankOnPathY) ||
+					(currentTankX - 2 == tankOnPathX && currentTankY - 1 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY + 2 == tankOnPathY) ||
+					(currentTankX - 1 == tankOnPathX && currentTankY - 2 == tankOnPathY))
 					return true;
 			}
 
