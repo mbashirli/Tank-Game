@@ -98,14 +98,6 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 				Positions::getInstance()->getBulletCoordinates().direction);
 			clientBullet.addBullet();	
 			Positions::getInstance()->setSendBulletFalse();
-		
-			if (Positions::getInstance()->getTankStatus(Positions::getInstance()->getClientIndex()) == false)
-			{
-				newTank.disableTank();
-			//	std::cout << "Killed tank!" << std::endl;
-			
-			}
-
 		}
 
 
@@ -151,6 +143,11 @@ int Client::sendData(SOCKET clientSOCK, int clientIndex)
 			}
 		}
 
+		if (Positions::getInstance()->getTankStatus(clientIndex) == false && newTank.isTankDisabled())
+		{
+			newTank.disableTank();
+
+		}
 	}
 	return 1;
 }

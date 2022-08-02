@@ -1,7 +1,7 @@
 #include "Positions.h"
 
-Positions::Positions(){
-	
+Positions::Positions() {
+
 	bulletPositions.push_back({});
 }
 Positions* Positions::instance;
@@ -20,7 +20,7 @@ void Positions::updateTankPosition(int xCoord, int yCoord, int direction, int in
 
 	if (index < tankPositions.size())
 	{
-		tankPositions[index] = {xCoord, yCoord, direction, true};
+		tankPositions[index] = { xCoord, yCoord, direction, true };
 	}
 	else
 	{
@@ -47,7 +47,10 @@ void Positions::killTank(int index)
 
 bool Positions::getTankStatus(int index)
 {
-	return tankPositions[index].isTankActive;
+	if (index < tankPositions.size())
+		return tankPositions[index].isTankActive;
+	else
+		return true;
 }
 
 void Positions::updateTankAmount(int amount)

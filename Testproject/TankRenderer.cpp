@@ -65,6 +65,7 @@ void TankRenderer::deathAnimation()
 	{
 		if (!isTankActive)
 		{
+			std::cout<<"deat";
 			setTankInactiveColor();
 			renderTank();
 			Sleep(100);

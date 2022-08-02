@@ -408,7 +408,7 @@ int BulletRenderer::isTankActive()
 void BulletRenderer::killTank(int index)
 {
 	Positions::getInstance()->killTank(index);
-	std::cout << "deactivated tank" << std::endl;
+//	std::cout << "deactivated tank" << std::endl;
 }
 
 void BulletRenderer::killThread()
