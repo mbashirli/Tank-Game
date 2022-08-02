@@ -26,7 +26,7 @@ public:
 	static playerInformation acceptData(std::string dataPacket);
 private:
 	std::string port = "80";
-	std::string hostIP = "192.168.1.135";
+	std::string hostIP = "192.168.100.12";
 	static std::vector <playerInformation> playersData;
 	enum directionPoints {UP, DOWN, LEFT, RIGHT};
 };
